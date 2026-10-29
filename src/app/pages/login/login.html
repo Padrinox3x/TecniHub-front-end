@@ -1,4 +1,5 @@
- <div class="login-page">
+
+<div class="login-page">
   <section class="brand-panel">
     <div class="brand">
       <div class="brand-icon">T</div>
@@ -40,15 +41,18 @@
         Ingresa tus datos para continuar.
       </p>
 
-      <form>
+      <form (ngSubmit)="iniciarSesion()" #loginForm="ngForm">
         <label for="email">Correo electrónico</label>
         <input
           id="email"
           name="email"
           type="email"
+          [(ngModel)]="email"
           placeholder="nombre@ejemplo.com"
           autocomplete="email"
           required
+          email
+          [disabled]="loading"
         />
 
         <div class="password-heading">
@@ -59,12 +63,32 @@
           id="password"
           name="password"
           type="password"
+          [(ngModel)]="password"
           placeholder="Ingresa tu contraseña"
           autocomplete="current-password"
           required
+          [disabled]="loading"
         />
 
-        <button type="submit">Iniciar sesión <span>→</span></button>
+        @if (errorMessage) {
+          <p class="form-error" role="alert">
+            {{ errorMessage }}
+          </p>
+        }
+
+        @if (successMessage) {
+          <p class="form-success" role="status">
+            {{ successMessage }}
+          </p>
+        }
+
+        <button
+          type="submit"
+          [disabled]="loading || loginForm.invalid"
+        >
+          {{ loading ? 'Verificando...' : 'Iniciar sesión' }}
+          <span>{{ loading ? '...' : '→' }}</span>
+        </button>
       </form>
 
       <p class="register-link">
