@@ -1,0 +1,50 @@
+<section class="page-wrap">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">HU-007 · SOLICITUD DE REPARACIÓN</p>
+      <h1>Cuéntanos qué necesita reparación</h1>
+      <p class="lead">Describe la falla y la zona para que un técnico pueda encontrar tu solicitud.</p>
+    </div>
+    <span class="step-badge"><span>01</span> Publica tu servicio</span>
+  </div>
+
+  <div class="content-grid">
+    <form #serviceForm="ngForm" class="form-card" (ngSubmit)="submit(serviceForm)" novalidate>
+      <div class="section-title"><span class="section-icon">⌂</span><div><h2>El equipo</h2><p>Identifica el electrodoméstico.</p></div></div>
+      <div class="field-grid">
+        <label class="field full">
+          <span>Tu UUID de cliente <b>*</b></span>
+          <input name="clienteId" [(ngModel)]="model.clienteId" required minlength="36" maxlength="36" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+          <small>Se requiere el identificador de cliente registrado en la plataforma.</small>
+        </label>
+        <label class="field">
+          <span>Categoría <b>*</b></span>
+          <select name="categoriaId" [(ngModel)]="model.categoriaId" required>
+            <option [ngValue]="0" disabled>Selecciona una categoría</option>
+            @for (category of categories; track category.id) { <option [ngValue]="category.id">{{ category.nombre }}</option> }
+          </select>
+        </label>
+        <label class="field"><span>Tipo de electrodoméstico <b>*</b></span><input name="tipo" [(ngModel)]="model.tipoElectrodomestico" required maxlength="100" placeholder="Ej. Refrigerador" /></label>
+        <label class="field"><span>Marca</span><input name="marca" [(ngModel)]="model.marca" maxlength="100" placeholder="Ej. Mabe" /></label>
+        <label class="field"><span>Modelo</span><input name="modelo" [(ngModel)]="model.modelo" maxlength="100" placeholder="Si lo conoces" /></label>
+      </div>
+
+      <div class="section-title second"><span class="section-icon">✳</span><div><h2>La falla</h2><p>Agrega detalles que ayuden al diagnóstico.</p></div></div>
+      <label class="field"><span>Descripción de la falla <b>*</b></span><textarea name="descripcionFalla" [(ngModel)]="model.descripcionFalla" required maxlength="3000" rows="4" placeholder="¿Qué ocurre? ¿Desde cuándo? ¿Qué has intentado?"></textarea><small class="counter">{{ model.descripcionFalla.length }}/3000</small></label>
+
+      <div class="section-title second"><span class="section-icon">⌖</span><div><h2>Ubicación y horario</h2><p>Comparte una zona aproximada; no publiques datos sensibles.</p></div></div>
+      <div class="field-grid">
+        <label class="field"><span>Ubicación aproximada <b>*</b></span><input name="ubicacion" [(ngModel)]="model.ubicacionAproximada" required maxlength="255" placeholder="Colonia o referencia" /></label>
+        <label class="field"><span>Municipio</span><input name="municipio" [(ngModel)]="model.municipio" maxlength="100" placeholder="Municipio" /></label>
+        <label class="field"><span>Fecha preferida</span><input type="date" name="fecha" [(ngModel)]="model.fechaSolicitud" /></label>
+        <label class="field"><span>Horario preferido</span><input name="horario" [(ngModel)]="model.horarioPreferido" maxlength="100" placeholder="Ej. Por la mañana" /></label>
+      </div>
+
+      @if (error) { <div class="notice error" role="alert">{{ error }}</div> }
+      @if (message) { <div class="notice success" role="status"><strong>{{ resultCode }}</strong><span>{{ message }}</span></div> }
+      <div class="form-actions"><span>Los campos marcados con <b>*</b> son obligatorios.</span><button class="primary-button" type="submit" [disabled]="saving">{{ saving ? 'Publicando…' : 'Publicar solicitud' }}<span aria-hidden="true">→</span></button></div>
+    </form>
+
+    <aside class="side-note"><div class="note-mark">i</div><h2>¿Qué pasa después?</h2><p>Tu solicitud aparecerá en el tablón para que técnicos puedan revisarla y contactarte.</p><div class="note-divider"></div><h3>Consejo</h3><p>Una descripción concreta y una ubicación aproximada ayudan a recibir respuestas más útiles.</p><div class="mini-step"><span>01</span><span>Publicas los detalles</span></div><div class="mini-step"><span>02</span><span>Un técnico revisa la solicitud</span></div></aside>
+  </div>
+</section>

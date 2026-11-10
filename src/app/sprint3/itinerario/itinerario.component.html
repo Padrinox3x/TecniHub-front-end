@@ -1,0 +1,18 @@
+<section class="page-wrap itinerary-page">
+  <div class="page-heading"><div><p class="eyebrow">HU-010 · AGENDA TÉCNICA</p><h1>Agrega un servicio a tu itinerario</h1><p class="lead">Programa una visita para un servicio que ya aceptaste y evita empalmar tus horarios.</p></div><div class="calendar-mark"><span>▦</span><div><strong>Agenda</strong><small>Tiempo estimado</small></div></div></div>
+
+  <div class="schedule-layout">
+    <form #scheduleForm="ngForm" class="schedule-card" (ngSubmit)="submit(scheduleForm)" novalidate>
+      <div class="section-title"><span class="section-icon">▦</span><div><h2>Detalles de la visita</h2><p>La duración es una estimación que tú defines.</p></div></div>
+      <label class="field"><span>UUID del servicio aceptado <b>*</b></span><input name="servicioId" [(ngModel)]="model.servicioId" required minlength="36" maxlength="36" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /><small>El servicio debe estar aceptado y asignado al técnico.</small></label>
+      <label class="field"><span>Tu UUID de técnico <b>*</b></span><input name="tecnicoId" [(ngModel)]="model.tecnicoId" (ngModelChange)="syncActor()" required minlength="36" maxlength="36" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /><small>Se usa también como responsable de auditoría de la acción.</small></label>
+      <div class="field-grid"><label class="field"><span>Fecha <b>*</b></span><input type="date" name="fecha" [(ngModel)]="model.fecha" required /></label><label class="field"><span>Hora de inicio <b>*</b></span><input type="time" name="inicio" [(ngModel)]="model.horaInicio" required /></label><label class="field"><span>Hora estimada de fin <b>*</b></span><input type="time" name="fin" [(ngModel)]="model.horaFinEstimada" required /></label></div>
+      <label class="field"><span>Notas para la cita</span><textarea name="notas" [(ngModel)]="model.notas" maxlength="2000" rows="3" placeholder="Detalles que ayuden a preparar la visita"></textarea></label>
+      @if (error) { <div class="notice error" role="alert">{{ error }}</div> }
+      @if (message) { <div class="notice success" role="status">{{ message }}</div> }
+      <div class="form-footer"><span>Se rechazará la cita si el técnico ya tiene otro servicio en ese horario.</span><button class="primary-button" type="submit" [disabled]="saving">{{ saving ? 'Agendando…' : 'Agregar al itinerario' }} <span>→</span></button></div>
+    </form>
+
+    <aside class="schedule-aside"><div class="clock-icon">◷</div><h2>Duración estimada</h2><p>Elige una hora de inicio y una hora de término aproximada. La HU no define una duración fija, así que no imponemos una.</p><div class="aside-rule"></div><h3>Antes de agendar</h3><ul><li>El servicio debe estar aceptado.</li><li>Debes ser el técnico asignado.</li><li>La hora final debe ser posterior al inicio.</li><li>El intervalo no puede empalmarse con otra cita tuya.</li></ul><div class="estimate-tag"><span>✓</span> El tiempo es una estimación</div></aside>
+  </div>
+</section>
