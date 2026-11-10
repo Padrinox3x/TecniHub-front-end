@@ -1,0 +1,52 @@
+<section class="page-wrap">
+  <div class="page-heading"><div><p class="eyebrow">HU-008 · MERCADO DE REFACCIONES</p><h1>Encuentra o comparte una pieza</h1><p class="lead">Explora ofertas disponibles o publica una pieza para que otros puedan encontrarla.</p></div><div class="stock-mark"><span>↗</span><div><strong>{{ pieces.length }}</strong><small>ofertas en esta búsqueda</small></div></div></div>
+
+  <div class="mode-tabs" role="tablist" aria-label="Acciones de piezas">
+    <button type="button" role="tab" [attr.aria-selected]="mode === 'search'" [class.active]="mode === 'search'" (click)="mode = 'search'; search()"><span>⌕</span> Buscar piezas</button>
+    <button type="button" role="tab" [attr.aria-selected]="mode === 'publish'" [class.active]="mode === 'publish'" (click)="mode = 'publish'"><span>＋</span> Ofrecer una pieza</button>
+  </div>
+
+  @if (error) { <div class="notice error" role="alert">{{ error }}</div> }
+  @if (notice) { <div class="notice success" role="status">{{ notice }} <span class="id-chip">{{ pieceId }}</span></div> }
+
+  @if (mode === 'search') {
+    <div class="search-layout">
+      <aside class="filters card">
+        <div class="filter-heading"><div><p class="eyebrow">FILTROS</p><h2>Afina tu búsqueda</h2></div><span>⌕</span></div>
+        <label class="field"><span>Palabra clave</span><input [(ngModel)]="filters.texto" placeholder="Ej. compresor" (keyup.enter)="search()" /></label>
+        <label class="field"><span>Categoría</span><select [(ngModel)]="filters.categoriaId"><option [ngValue]="undefined">Todas</option>@for (category of categories; track category.id) {<option [ngValue]="category.id">{{ category.nombre }}</option>}</select></label>
+        <label class="field"><span>Condición</span><select [(ngModel)]="filters.condicion"><option value="">Cualquiera</option><option value="NUEVO">Nuevo</option><option value="USADO_EXCELENTE">Usado · excelente</option><option value="USADO_BUENO">Usado · bueno</option><option value="PARA_REPARAR">Para reparar</option></select></label>
+        <label class="field"><span>Modalidad</span><select [(ngModel)]="filters.modalidad"><option value="">Todas</option><option value="VENTA">Venta</option><option value="INTERCAMBIO">Intercambio</option><option value="VENTA_E_INTERCAMBIO">Venta o intercambio</option></select></label>
+        <label class="field"><span>Precio máximo</span><div class="price-input"><span>$</span><input type="number" min="0" step="0.01" [(ngModel)]="filters.precioMaximo" placeholder="Sin límite" /></div></label>
+        <button class="primary-button full-button" type="button" (click)="search()" [disabled]="loading">{{ loading ? 'Buscando…' : 'Aplicar filtros' }} <span>→</span></button>
+      </aside>
+
+      <div class="results-area"><div class="results-heading"><div><p class="eyebrow">PIEZAS DISPONIBLES</p><h2>Ofertas para ti</h2></div><span class="result-count">{{ pieces.length }} resultados</span></div>
+        @if (loading) { <div class="empty-state">Cargando ofertas…</div> }
+        @else if (pieces.length === 0) { <div class="empty-state"><span class="empty-icon">⌕</span><h3>No encontramos piezas con esos filtros</h3><p>Prueba con otra palabra o amplía los criterios de búsqueda.</p></div> }
+        @else { <div class="piece-grid">@for (piece of pieces; track piece.id) {
+          <article class="piece-card"><div class="piece-top"><span class="condition" [class.new]="piece.condicion === 'NUEVO'">{{ piece.condicion.replaceAll('_', ' ') }}</span><span class="folio">{{ piece.codigoFolio }}</span></div><h3>{{ piece.nombre }}</h3><p class="description">{{ piece.descripcion }}</p><div class="piece-meta"><span>▦ Categoría {{ piece.categoriaId }}</span><span>⌖ {{ piece.ubicacionEntrega }}</span></div><div class="piece-bottom"><div class="price">@if (piece.precio) {<strong>{{ piece.precio | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong>} @else {<strong>Intercambio</strong>}<small>{{ piece.modalidad.replaceAll('_', ' ') }}</small></div><a class="contact-link" [href]="piece.medioContacto.includes('@') ? 'mailto:' + piece.medioContacto : 'tel:' + piece.medioContacto">Contactar <span>↗</span></a></div>@if (piece.piezaIntercambioDeseada) {<div class="trade-note">Acepta a cambio: {{ piece.piezaIntercambioDeseada }}</div>}</article>
+        }</div> }
+      </div>
+    </div>
+  }
+
+  @if (mode === 'publish') {
+    <form #pieceForm="ngForm" class="publish-card card" (ngSubmit)="submit(pieceForm)" novalidate>
+      <div class="publish-intro"><div class="publish-icon">＋</div><div><p class="eyebrow">NUEVA OFERTA</p><h2>Publica una pieza</h2><p>Completa los detalles para que los técnicos puedan encontrarla.</p></div></div>
+      <div class="form-grid">
+        <label class="field wide"><span>Tu UUID de técnico <b>*</b></span><input name="tecnicoId" [(ngModel)]="model.tecnicoId" required minlength="36" maxlength="36" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" /><small>Se requiere el identificador de técnico registrado en la plataforma.</small></label>
+        <label class="field"><span>Categoría <b>*</b></span><select name="categoria" [(ngModel)]="model.categoriaId" required><option [ngValue]="0" disabled>Selecciona una categoría</option>@for (category of categories; track category.id) {<option [ngValue]="category.id">{{ category.nombre }}</option>}</select></label>
+        <label class="field"><span>Nombre de la pieza <b>*</b></span><input name="nombre" [(ngModel)]="model.nombre" required maxlength="150" placeholder="Ej. Bomba de agua" /></label>
+        <label class="field wide"><span>Descripción <b>*</b></span><textarea name="descripcion" [(ngModel)]="model.descripcion" required maxlength="3000" rows="3" placeholder="Compatibilidad, medidas o detalles útiles"></textarea></label>
+        <label class="field"><span>Condición <b>*</b></span><select name="condicion" [(ngModel)]="model.condicion" required><option value="NUEVO">Nuevo</option><option value="USADO_EXCELENTE">Usado · excelente</option><option value="USADO_BUENO">Usado · bueno</option><option value="PARA_REPARAR">Para reparar</option></select></label>
+        <label class="field"><span>Modalidad <b>*</b></span><select name="modalidad" [(ngModel)]="model.modalidad" required><option value="VENTA">Venta</option><option value="INTERCAMBIO">Intercambio</option><option value="VENTA_E_INTERCAMBIO">Venta o intercambio</option></select></label>
+        @if (model.modalidad !== 'INTERCAMBIO') { <label class="field"><span>Precio (MXN) <b>*</b></span><input type="number" name="precio" [(ngModel)]="model.precio" min="0.01" max="99999999.99" step="0.01" required placeholder="0.00" /></label> }
+        @if (model.modalidad !== 'VENTA') { <label class="field"><span>Pieza que aceptarías a cambio <b>*</b></span><input name="piezaIntercambio" [(ngModel)]="model.piezaIntercambioDeseada" required maxlength="1000" placeholder="Describe lo que buscas" /></label> }
+        <label class="field"><span>Medio de contacto <b>*</b></span><input name="contacto" [(ngModel)]="model.medioContacto" required maxlength="255" placeholder="Teléfono o correo" /></label>
+        <label class="field"><span>Ubicación de entrega <b>*</b></span><input name="ubicacion" [(ngModel)]="model.ubicacionEntrega" required maxlength="255" placeholder="Zona aproximada" /></label>
+      </div>
+      <div class="form-footer"><span>La publicación seguirá las modalidades y condiciones aceptadas por la plataforma.</span><button class="primary-button" type="submit" [disabled]="saving">{{ saving ? 'Publicando…' : 'Publicar pieza' }} <span>→</span></button></div>
+    </form>
+  }
+</section>
