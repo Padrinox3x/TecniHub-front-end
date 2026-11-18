@@ -71,7 +71,7 @@ export class Registro {
     this.loading = true;
 
     console.log('Correo enviado al registro:', datos.email);
-    this.authService.registrar(datos).subscribe({
+    this.authService.registrarCliente(datos).subscribe({
       next: (response) => {
   this.loading = false;
   this.successMessage =

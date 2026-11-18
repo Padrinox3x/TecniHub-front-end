@@ -1,0 +1,86 @@
+
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  inject
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { PerfilService } from '../../core/services/perfil';
+import { SessionService } from '../../core/services/session';
+import { PerfilResponse } from '../../core/models/perfil.models';
+import { finalize } from 'rxjs';
+
+@Component({
+  selector: 'app-inicio',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  templateUrl: './inicio.html',
+  styleUrl: './inicio.css'
+})
+export class Inicio implements OnInit {
+  private readonly perfilService = inject(PerfilService);
+  private readonly sessionService = inject(SessionService);
+  private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  perfil: PerfilResponse | null = null;
+  cargando = true;
+  error = '';
+
+  ngOnInit(): void {
+    this.cargarPerfil();
+  }
+
+  cargarPerfil(): void {
+    this.cargando = true;
+    this.error = '';
+    this.cdr.detectChanges();
+
+    this.perfilService.obtenerPerfil()
+      .pipe(
+        finalize(() => {
+          this.cargando = false;
+          this.cdr.detectChanges();
+          console.log('[PERFIL] Estado final:', this.cargando);
+        })
+      )
+      .subscribe({
+        next: (respuesta) => {
+          this.perfil = respuesta;
+          console.log('[PERFIL] Perfil recibido:', this.perfil);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('[PERFIL] Error:', err);
+
+          if (err.status === 401) {
+            this.sessionService.cerrarSesion();
+            this.router.navigate(['/login']);
+            return;
+          }
+
+          this.error = 'No fue posible cargar tu perfil. Intenta nuevamente.';
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  cerrarSesion(): void {
+    this.sessionService.cerrarSesion();
+    this.router.navigate(['/login']);
+  }
+
+  obtenerNombre(): string {
+    if (this.perfil?.cliente) {
+      return `${this.perfil.cliente.nombre} ${this.perfil.cliente.apellidos}`;
+    }
+
+    return this.perfil?.tecnico?.nombreCompleto ?? 'Usuario';
+  }
+
+  esTecnico(): boolean {
+    return this.perfil?.rol?.toUpperCase() === 'TECNICO';
+  }
+}

@@ -3,27 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface LoginRequest {
-  email: string;
-  contrasena: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  expiracion: string;
-  usuarioId: number;
-  email: string;
-  rol: string;
-}
-
-export interface RegistroClienteRequest {
-  nombre: string;
-  apellidos: string;
-  email: string;
-  contrasena: string;
-  telefono: string;
-  direccion?: string;
-}
+import {
+  LoginRequest,
+  RegistroClienteRequest,
+  RegistroTecnicoRequest,
+  AuthResponse
+} from '../models/auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +16,11 @@ export interface RegistroClienteRequest {
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  // Sustituye este valor por la URL HTTPS real de Swagger.
   private readonly apiUrl = 'https://localhost:7013/api/Auth';
 
+  /**
+   * Inicia sesión con las credenciales del usuario.
+   */
   login(datos: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.apiUrl}/login`,
@@ -41,11 +28,26 @@ export class AuthService {
     );
   }
 
-  registrar(
+  /**
+   * Registra una cuenta de cliente.
+   */
+  registrarCliente(
     datos: RegistroClienteRequest
   ): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(
       `${this.apiUrl}/registro`,
+      datos
+    );
+  }
+
+  /**
+   * Registra una cuenta de técnico.
+   */
+  registrarTecnico(
+    datos: RegistroTecnicoRequest
+  ): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(
+      `${this.apiUrl}/registro-tecnico`,
       datos
     );
   }

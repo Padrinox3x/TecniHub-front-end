@@ -1,0 +1,172 @@
+
+<main class="inicio-container">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">T</span>
+      <span>TecniHub</span>
+    </div>
+
+    <a routerLink="/tablon" class="nav-link">
+  Explorar publicaciones
+</a>
+
+    <button class="logout-button" (click)="cerrarSesion()">
+      Cerrar sesión
+    </button>
+
+
+  </header>
+
+  <section class="content">
+    @if (cargando) {
+      <div class="status-card">
+        <div class="loader"></div>
+        <p>Cargando tu perfil...</p>
+      </div>
+    } @else if (error) {
+      <div class="status-card error-card">
+        <h2>Ocurrió un problema</h2>
+        <p>{{ error }}</p>
+        <button class="primary-button" (click)="cargarPerfil()">
+          Intentar nuevamente
+        </button>
+      </div>
+    } @else if (perfil) {
+      <section class="welcome">
+        <p class="eyebrow">PANEL PRINCIPAL</p>
+        <h1>¡Hola, {{ obtenerNombre() }}!</h1>
+        <p>Bienvenido a TecniHub. Aquí comienza tu actividad.</p>
+      </section>
+
+      <section class="profile-card">
+        <div class="profile-heading">
+          <div class="avatar">
+            {{ obtenerNombre().charAt(0).toUpperCase() }}
+          </div>
+
+          <div>
+            <h2>{{ obtenerNombre() }}</h2>
+            <p>{{ perfil.email }}</p>
+          </div>
+
+          <span class="role-badge">
+            {{ perfil.rol }}
+          </span>
+        </div>
+
+        <div class="profile-details">
+          @if (perfil.cliente) {
+            <div class="detail">
+              <span>Teléfono</span>
+              <strong>{{ perfil.cliente.telefono || 'No registrado' }}</strong>
+            </div>
+
+            <div class="detail">
+              <span>Dirección</span>
+              <strong>{{ perfil.cliente.direccion || 'No registrada' }}</strong>
+            </div>
+          }
+
+          @if (perfil.tecnico) {
+            <div class="detail">
+              <span>Teléfono</span>
+              <strong>{{ perfil.tecnico.telefono || 'No registrado' }}</strong>
+            </div>
+
+            <div class="detail">
+              <span>Negocio físico</span>
+              <strong>
+                {{ perfil.tecnico.tieneNegocioFisico ? 'Sí' : 'No' }}
+              </strong>
+            </div>
+
+            <div class="detail">
+              <span>Ubicación del establecimiento</span>
+              <strong>
+                {{ perfil.tecnico.ubicacionEstablecimiento || 'No registrada' }}
+              </strong>
+            </div>
+
+            <div class="detail">
+              <span>Costo de cotización</span>
+              <strong>
+                @if (perfil.tecnico.costoCotizacion != null) {
+                  {{ perfil.tecnico.costoCotizacion | currency:'MXN':'symbol':'1.2-2' }}
+                } @else {
+                  No establecido
+                }
+              </strong>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="dashboard-section">
+        <h2>Tu espacio de trabajo</h2>
+
+        @if (esTecnico()) {
+          <p>
+            Desde aquí podrás administrar tus publicaciones, servicios y
+            actividades como técnico.
+          </p>
+        } @else {
+          <p>
+            Desde aquí podrás consultar servicios, encontrar técnicos y
+            administrar tus solicitudes.
+          </p>
+        }
+
+        <div class="actions-grid">
+
+  @if (esTecnico()) {
+    <article class="action-card">
+      <div class="action-icon">🔧</div>
+
+      <h3>Publicar una pieza</h3>
+
+      <p>
+        Comparte una pieza disponible para venta o intercambio
+        con la comunidad TecniHub.
+      </p>
+
+      <a routerLink="/publicar-pieza" class="action-button">
+        Publicar pieza
+      </a>
+    </article>
+  } @else {
+    <article class="action-card">
+      <div class="action-icon">🛠️</div>
+
+      <h3>Solicitar un servicio</h3>
+
+      <p>
+        Describe la falla de tu electrodoméstico y permite
+        que los técnicos conozcan tu solicitud.
+      </p>
+
+      <a routerLink="/publicar-servicio" class="action-button">
+        Publicar servicio
+      </a>
+    </article>
+  }
+
+  <article class="action-card secondary-action">
+    <div class="action-icon">📋</div>
+
+    <h3>Explorar publicaciones</h3>
+
+    <p>
+      Consulta las publicaciones disponibles en TecniHub
+      y encuentra servicios o piezas que necesitas.
+    </p>
+
+    <a routerLink="/tablon" class="action-button secondary-button">
+      Explorar tablón
+    </a>
+  </article>
+
+</div>
+      </section>
+    }
+  </section>
+</main>

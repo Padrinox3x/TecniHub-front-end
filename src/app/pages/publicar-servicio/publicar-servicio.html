@@ -1,0 +1,175 @@
+
+<main class="form-page">
+  <header class="topbar">
+    <a routerLink="/inicio" class="brand">
+      <span class="brand-icon">T</span>
+      <span>TecniHub</span>
+    </a>
+
+    <a routerLink="/tablon" class="nav-link">
+      Explorar publicaciones
+    </a>
+  </header>
+
+  <section class="form-container">
+    <div class="form-header">
+      <p class="eyebrow">COMUNIDAD TECNIHUB</p>
+      <h1>Publicar solicitud de servicio</h1>
+      <p class="subtitle">
+        Describe el problema de tu electrodoméstico para que los
+        técnicos puedan conocer tu solicitud y ayudarte.
+      </p>
+    </div>
+
+    @if (publicado) {
+      <section class="feedback success">
+        <h2>¡Publicación creada!</h2>
+        <p>
+          Tu solicitud de servicio se registró correctamente.
+          Ya puedes consultarla en el tablón.
+        </p>
+        <a routerLink="/tablon" class="primary-button">
+          Ver publicaciones
+        </a>
+      </section>
+    } @else {
+      <form [formGroup]="formulario" (ngSubmit)="publicar()">
+        <section class="form-card">
+
+          <div class="field">
+            <label for="titulo">Título de la solicitud *</label>
+            <input
+              id="titulo"
+              type="text"
+              formControlName="titulo"
+              placeholder="Ej. Reparación de lavadora"
+              maxlength="150"
+            />
+
+            @if (formulario.controls.titulo.touched &&
+                 formulario.controls.titulo.invalid) {
+              <small class="field-error">
+                El título es obligatorio y admite hasta 150 caracteres.
+              </small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="tipoElectrodomestico">
+              Tipo de electrodoméstico *
+            </label>
+            <select
+              id="tipoElectrodomestico"
+              formControlName="tipoElectrodomestico"
+            >
+              <option value="">Selecciona una opción</option>
+              <option value="Refrigerador">Refrigerador</option>
+              <option value="Lavadora">Lavadora</option>
+              <option value="Secadora">Secadora</option>
+              <option value="Estufa">Estufa</option>
+              <option value="Microondas">Microondas</option>
+              <option value="Aire acondicionado">Aire acondicionado</option>
+              <option value="Televisor">Televisor</option>
+              <option value="Otro">Otro</option>
+            </select>
+
+            @if (formulario.controls.tipoElectrodomestico.touched &&
+                 formulario.controls.tipoElectrodomestico.invalid) {
+              <small class="field-error">
+                Selecciona el tipo de electrodoméstico.
+              </small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="descripcionFalla">Descripción de la falla *</label>
+            <textarea
+              id="descripcionFalla"
+              formControlName="descripcionFalla"
+              rows="5"
+              maxlength="1000"
+              placeholder="Describe qué sucede, cuándo comenzó el problema y cualquier detalle que pueda ayudar al técnico..."
+            ></textarea>
+
+            <span class="field-hint">Máximo 1000 caracteres.</span>
+
+            @if (formulario.controls.descripcionFalla.touched &&
+                 formulario.controls.descripcionFalla.invalid) {
+              <small class="field-error">
+                La descripción es obligatoria.
+              </small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="ubicacionAproximada">
+              Ubicación aproximada *
+            </label>
+            <input
+              id="ubicacionAproximada"
+              type="text"
+              formControlName="ubicacionAproximada"
+              maxlength="255"
+              placeholder="Ej. Centro, Ixmiquilpan, Hidalgo"
+            />
+
+            @if (formulario.controls.ubicacionAproximada.touched &&
+                 formulario.controls.ubicacionAproximada.invalid) {
+              <small class="field-error">
+                La ubicación es obligatoria.
+              </small>
+            }
+          </div>
+
+          <div class="field">
+            <label for="imagenReferencia">
+              Imagen de referencia
+              <span class="optional">(Opcional)</span>
+            </label>
+            <input
+              id="imagenReferencia"
+              type="url"
+              formControlName="imagenReferencia"
+              maxlength="500"
+              placeholder="https://ejemplo.com/imagen.jpg"
+            />
+            <span class="field-hint">
+              Introduce una URL de imagen. Máximo 500 caracteres.
+            </span>
+
+            @if (formulario.controls.imagenReferencia.touched &&
+     formulario.controls.imagenReferencia.invalid) {
+  <small class="field-error">
+    Introduce una URL válida que comience con http:// o https://
+    y que no supere los 500 caracteres.
+  </small>
+}
+          </div>
+
+          <p class="required-note">* Campos obligatorios</p>
+
+          @if (error) {
+            <div class="feedback error">
+              {{ error }}
+            </div>
+          }
+
+          <div class="form-actions">
+            <a routerLink="/inicio" class="cancel-button">
+              Cancelar
+            </a>
+
+            <button
+              type="submit"
+              class="primary-button"
+              [disabled]="enviando"
+            >
+              {{ enviando ? 'Publicando...' : 'Publicar solicitud' }}
+            </button>
+          </div>
+
+        </section>
+      </form>
+    }
+  </section>
+</main>

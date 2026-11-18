@@ -1,0 +1,141 @@
+
+<main class="detalle-container">
+
+  <a routerLink="/tablon" class="back-link">
+    ← Volver al tablón
+  </a>
+
+  @if (cargando) {
+    <section class="message-card">
+      <div class="loader"></div>
+      <p>Cargando detalle de la publicación...</p>
+    </section>
+  } @else if (error) {
+    <section class="message-card error-card">
+      <h2>No se pudo abrir la publicación</h2>
+      <p>{{ error }}</p>
+      <a routerLink="/tablon" class="primary-button">
+        Regresar al tablón
+      </a>
+    </section>
+  } @else if (publicacion) {
+
+    <article
+      class="detail-card"
+      [style.border-top-color]="publicacion.colorHex || '#cbd5e1'"
+    >
+
+      @if (publicacion.imagenUrl) {
+        <div class="image-container">
+          <img
+            [src]="publicacion.imagenUrl"
+            [alt]="publicacion.titulo"
+          />
+        </div>
+      }
+
+      <div class="detail-content">
+
+        <div class="detail-header">
+          <div>
+            <span class="type-badge">
+              {{ obtenerEtiquetaTipo() }}
+            </span>
+
+            <h1>{{ publicacion.titulo }}</h1>
+          </div>
+
+          <span
+            class="status-badge"
+            [class.completed]="publicacion.esCompletado"
+          >
+            {{ obtenerEtiquetaEstado() }}
+          </span>
+        </div>
+
+        <section class="description-section">
+          <h2>
+            {{ esServicio() ? 'Descripción de la falla' : 'Descripción de la pieza' }}
+          </h2>
+
+          <p>{{ publicacion.descripcion }}</p>
+        </section>
+
+        <section class="information-section">
+          <h2>Información de la publicación</h2>
+
+          <div class="information-grid">
+
+            <div class="information-item">
+              <span>Publicado por</span>
+              <strong>{{ publicacion.autorNombre }}</strong>
+            </div>
+
+            <div class="information-item">
+              <span>Tipo de publicación</span>
+              <strong>{{ obtenerEtiquetaTipo() }}</strong>
+            </div>
+
+            <div class="information-item">
+              <span>Modalidad</span>
+              <strong>{{ publicacion.modalidad }}</strong>
+            </div>
+
+            <div class="information-item">
+              <span>Estado</span>
+              <strong>{{ publicacion.estado }}</strong>
+            </div>
+
+            @if (esServicio() && publicacion.ubicacion) {
+              <div class="information-item">
+                <span>Ubicación aproximada</span>
+                <strong>{{ publicacion.ubicacion }}</strong>
+              </div>
+            }
+
+            @if (!esServicio() && publicacion.precio != null) {
+              <div class="information-item">
+                <span>Precio</span>
+                <strong>
+                  {{ publicacion.precio | currency:'MXN':'symbol':'1.2-2' }}
+                </strong>
+              </div>
+            }
+
+            @if (publicacion.tecnicoAsignadoNombre) {
+              <div class="information-item">
+                <span>Técnico asignado</span>
+                <strong>{{ publicacion.tecnicoAsignadoNombre }}</strong>
+              </div>
+            }
+
+            <div class="information-item">
+              <span>Fecha de publicación</span>
+              <strong>
+                {{ publicacion.fechaPublicacion | date:'dd/MM/yyyy HH:mm' }}
+              </strong>
+            </div>
+
+            <div class="information-item">
+              <span>Clasificación</span>
+              <strong>{{ publicacion.codigoColor }}</strong>
+            </div>
+
+          </div>
+        </section>
+
+        <div class="detail-footer">
+          <span
+            class="color-indicator"
+            [style.background-color]="publicacion.colorHex"
+          ></span>
+
+          <span>Identificador: #{{ publicacion.id }}</span>
+        </div>
+
+      </div>
+    </article>
+
+  }
+
+</main>

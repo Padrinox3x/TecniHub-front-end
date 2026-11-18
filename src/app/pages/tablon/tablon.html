@@ -1,0 +1,172 @@
+
+<main class="tablon-container">
+
+  <header class="tablon-header">
+    <div>
+      <p class="eyebrow">COMUNIDAD TECNIHUB</p>
+      <h1>Tablón de publicaciones</h1>
+      <p class="subtitle">
+        Encuentra servicios y piezas publicados por la comunidad.
+      </p>
+    </div>
+  </header>
+
+  <section class="filters">
+    <div class="filter-group">
+      <label for="tipo">Tipo de publicación</label>
+
+      <select
+        id="tipo"
+        [value]="tipoSeleccionado"
+        (change)="cambiarTipo($any($event.target).value)"
+      >
+        <option value="TODOS">Todas las publicaciones</option>
+        <option value="SERVICIO">Servicios</option>
+        <option value="PIEZA">Piezas</option>
+      </select>
+    </div>
+
+    <label class="completed-filter">
+      <input
+        type="checkbox"
+        [checked]="incluirCompletados"
+        (change)="cambiarCompletados($event)"
+      />
+      Incluir publicaciones completadas
+    </label>
+
+    <button class="refresh-button" (click)="cargarPublicaciones()">
+      Actualizar
+    </button>
+  </section>
+
+  @if (cargando) {
+    <section class="message-card">
+      <div class="loader"></div>
+      <p>Cargando publicaciones...</p>
+    </section>
+  } @else if (error) {
+    <section class="message-card error-card">
+      <h2>Ocurrió un problema</h2>
+      <p>{{ error }}</p>
+      <button (click)="cargarPublicaciones()">
+        Intentar nuevamente
+      </button>
+    </section>
+  } @else if (publicaciones.length === 0) {
+    <section class="message-card empty-card">
+      <h2>No hay publicaciones disponibles</h2>
+      <p>
+        Actualmente no encontramos publicaciones con los filtros seleccionados.
+      </p>
+    </section>
+  } @else {
+    <section class="results-header">
+      <h2>Publicaciones disponibles</h2>
+      <span>{{ publicaciones.length }} resultados</span>
+    </section>
+
+    <section class="publications-grid">
+
+      @for (publicacion of publicaciones; track publicacion.tipoPublicacion + '-' + publicacion.id) {
+
+        <article
+        class="publication-card"
+        [style.border-left-color]="publicacion.colorHex || '#cbd5e1'"
+        >
+
+          @if (publicacion.imagenUrl) {
+            <img
+              class="publication-image"
+              [src]="publicacion.imagenUrl"
+              [alt]="publicacion.titulo"
+              loading="lazy"
+            />
+          }
+
+          <div class="publication-content">
+
+            <div class="card-top">
+              <span class="type-badge">
+                {{ obtenerEtiquetaTipo(publicacion.tipoPublicacion) }}
+              </span>
+
+              <span
+                class="status-badge"
+                [class.completed]="publicacion.esCompletado"
+              >
+                {{ publicacion.textoIndicador || publicacion.estado }}
+              </span>
+            </div>
+
+            <h3>{{ publicacion.titulo }}</h3>
+
+            <p class="description">
+              {{ publicacion.descripcion }}
+            </p>
+
+            <div class="publication-data">
+
+              <div>
+                <span>Publicado por</span>
+                <strong>{{ publicacion.autorNombre }}</strong>
+              </div>
+
+              <div>
+                <span>Modalidad</span>
+                <strong>{{ publicacion.modalidad }}</strong>
+              </div>
+
+              @if (publicacion.ubicacion) {
+                <div>
+                  <span>Ubicación</span>
+                  <strong>{{ publicacion.ubicacion }}</strong>
+                </div>
+              }
+
+              @if (publicacion.precio != null) {
+                <div>
+                  <span>Precio</span>
+                  <strong>
+                    {{ publicacion.precio | currency:'MXN':'symbol':'1.2-2' }}
+                  </strong>
+                </div>
+              }
+
+              @if (publicacion.tecnicoAsignadoNombre) {
+                <div>
+                  <span>Técnico asignado</span>
+                  <strong>{{ publicacion.tecnicoAsignadoNombre }}</strong>
+                </div>
+              }
+
+            </div>
+
+            <div class="card-footer">
+              <span>{{ publicacion.fechaPublicacion | date:'dd/MM/yyyy' }}</span>
+              <span>{{ obtenerColorTexto(publicacion.codigoColor) }}</span>
+            </div>
+
+            <div class="card-actions">
+  <button
+    class="details-button"
+    [routerLink]="[
+      '/detalle-publicacion',
+      publicacion.tipoPublicacion.toLowerCase(),
+      publicacion.id
+    ]"
+  >
+    Ver detalles
+    <span aria-hidden="true">→</span>
+  </button>
+</div>
+
+          </div>
+        </article>
+
+      }
+
+    </section>
+  }
+
+</main>
