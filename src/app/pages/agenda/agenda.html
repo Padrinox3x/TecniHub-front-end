@@ -1,0 +1,220 @@
+<app-navbar></app-navbar>
+
+<main class="agenda-container">
+  <header class="agenda-header">
+    <div class="header-titles">
+      <span class="eyebrow">AGENDA PROFESIONAL</span>
+      <h1>Mi Itinerario Técnico</h1>
+      <p class="subtitle">
+        Gestiona tus citas programadas, visitas a domicilio y reparaciones agendadas.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="schedule-btn" (click)="abrirModal()">
+        + Programar Nueva Visita
+      </button>
+    </div>
+  </header>
+
+  @if (mensajeExito) {
+    <div class="alert-success">
+      ✓ {{ mensajeExito }}
+    </div>
+  }
+
+  <!-- Filtros -->
+  <section class="filters-bar">
+    <label class="checkbox-label">
+      <input
+        type="checkbox"
+        [checked]="incluirCompletadas"
+        (change)="cambiarFiltroCompletadas()"
+      />
+      Mostrar servicios e itinerarios completados
+    </label>
+
+    <button type="button" class="refresh-btn" (click)="cargarItinerario()">
+      ↻ Actualizar
+    </button>
+  </section>
+
+  <!-- Lista de Citas -->
+  @if (cargando) {
+    <div class="status-card">
+      <div class="spinner"></div>
+      <p>Consultando tu itinerario...</p>
+    </div>
+  } @else if (error) {
+    <div class="status-card error-card">
+      <h3>Ocurrió un problema</h3>
+      <p>{{ error }}</p>
+      <button type="button" class="primary-btn" (click)="cargarItinerario()">Reintentar</button>
+    </div>
+  } @else if (citas.length === 0) {
+    <div class="status-card empty-card">
+      <div class="calendar-icon">📅</div>
+      <h3>No tienes citas agendadas</h3>
+      <p>
+        Acepta una solicitud en el tablón de servicios y programa la fecha y hora de tu visita técnica.
+      </p>
+      <a routerLink="/tablon" class="primary-btn">
+        Explorar el tablón
+      </a>
+    </div>
+  } @else {
+    <section class="appointments-grid">
+      @for (cita of citas; track cita.id) {
+        <article class="appointment-card" [class.completed]="cita.esCompletado">
+          <div class="card-time-badge">
+            <span class="date">{{ cita.fechaProgramada }}</span>
+            <span class="time">{{ cita.horaInicio }} - {{ cita.horaFinEstimada }}</span>
+          </div>
+
+          <div class="card-body">
+            <div class="card-top">
+              <span class="folio-tag">{{ cita.codigoFolio }}</span>
+              <span class="status-tag" [class.finished]="cita.esCompletado">
+                {{ cita.estado }}
+              </span>
+            </div>
+
+            <h3 class="service-title">{{ cita.tituloServicio }}</h3>
+
+            <div class="info-row">
+              <span class="icon">🔧</span>
+              <span>{{ cita.tipoElectrodomestico }}</span>
+            </div>
+
+            <div class="info-row">
+              <span class="icon">📍</span>
+              <span>{{ cita.ubicacion }}</span>
+            </div>
+
+            @if (cita.notas) {
+              <div class="notes-box">
+                <strong>Notas de visita:</strong>
+                <p>{{ cita.notas }}</p>
+              </div>
+            }
+
+            <div class="card-actions">
+              <a [routerLink]="['/detalle-publicacion/servicio', cita.servicioId]" class="details-link">
+                Ver servicio →
+              </a>
+
+              @if (!cita.esCompletado) {
+                <button
+                  type="button"
+                  class="complete-btn"
+                  (click)="finalizarCita(cita)"
+                >
+                  ✓ Marcar Realizada
+                </button>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </section>
+  }
+
+  <!-- Modal Programar Cita -->
+  @if (modalAbierto) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Agendar Visita en tu Itinerario</h3>
+          <button type="button" class="close-btn" (click)="cerrarModal()">✕</button>
+        </div>
+
+        <p class="modal-desc">
+          Establece la fecha y ventana de horario estimada para la reparación técnica.
+        </p>
+
+        <form (ngSubmit)="guardarCita()">
+          <label for="servicioId">Identificador / Folio del Servicio *</label>
+          <input
+            id="servicioId"
+            name="servicioId"
+            type="text"
+            appOnlyNumbers
+            [(ngModel)]="formServicioId"
+            placeholder="Ej. 1"
+            required
+            [disabled]="guardando"
+          />
+          <span class="field-hint">Solo números de folio</span>
+
+          <label for="fecha">Fecha de la visita *</label>
+          <input
+            id="fecha"
+            name="fecha"
+            type="date"
+            [min]="hoy"
+            [(ngModel)]="formFecha"
+            required
+            [disabled]="guardando"
+          />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="horaInicio">Hora de inicio *</label>
+              <input
+                id="horaInicio"
+                name="horaInicio"
+                type="time"
+                [(ngModel)]="formHoraInicio"
+                required
+                [disabled]="guardando"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="horaFin">Hora fin estimada *</label>
+              <input
+                id="horaFin"
+                name="horaFin"
+                type="time"
+                [(ngModel)]="formHoraFin"
+                required
+                [class.input-invalid]="!horarioValido"
+                [disabled]="guardando"
+              />
+            </div>
+          </div>
+          @if (!horarioValido) {
+            <span class="field-error">La hora de fin estimada debe ser posterior a la hora de inicio.</span>
+          }
+
+          <label for="notas">Instrucciones o notas adicionales</label>
+          <textarea
+            id="notas"
+            name="notas"
+            rows="3"
+            [(ngModel)]="formNotas"
+            placeholder="Ej. Llevar multímetro y kit de sellos para lavadora Samsung..."
+            [disabled]="guardando"
+          ></textarea>
+
+          @if (advertenciaModal) {
+            <p class="modal-warning">⚠️ {{ advertenciaModal }}</p>
+          }
+
+          @if (errorModal) {
+            <p class="modal-error">✕ {{ errorModal }}</p>
+          }
+
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" (click)="cerrarModal()" [disabled]="guardando">
+              Cancelar
+            </button>
+            <button type="submit" class="save-btn" [disabled]="guardando || !formValido">
+              {{ guardando ? 'Agendando...' : 'Guardar en mi Agenda' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>

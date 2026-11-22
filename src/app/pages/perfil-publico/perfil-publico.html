@@ -1,0 +1,235 @@
+<app-navbar></app-navbar>
+
+<main class="perfil-publico-container">
+  <div class="top-nav">
+    <a routerLink="/tablon" class="back-link">
+      ← Volver al tablón de publicaciones
+    </a>
+  </div>
+
+  @if (cargando) {
+    <div class="status-card">
+      <div class="spinner"></div>
+      <p>Consultando perfil público...</p>
+    </div>
+  } @else if (error) {
+    <div class="status-card error-card">
+      <h3>No fue posible cargar el perfil</h3>
+      <p>{{ error }}</p>
+      <a routerLink="/tablon" class="primary-btn">Regresar al tablón</a>
+    </div>
+  } @else if (tipoPerfil === 'TECNICO' && perfilTecnico) {
+    <!-- Perfil Público del Técnico (HU-012) -->
+    <article class="profile-card">
+      <header class="profile-header">
+        <div class="avatar-area">
+          @if (perfilTecnico.fotoUrl) {
+            <img [src]="perfilTecnico.fotoUrl" [alt]="perfilTecnico.nombreCompleto" class="avatar-img" />
+          } @else {
+            <div class="avatar-fallback">{{ inicial }}</div>
+          }
+        </div>
+
+        <div class="header-details">
+          <div class="name-row">
+            <h1>{{ perfilTecnico.nombreCompleto }}</h1>
+            <span class="role-badge">TÉCNICO ESPECIALISTA</span>
+          </div>
+
+          <p class="reputation-text">
+            {{ perfilTecnico.mensajeReputacion }}
+          </p>
+
+          <div class="rating-bar">
+            <div class="stars">
+              @for (star of [1, 2, 3, 4, 5]; track star) {
+                <span [class.active]="star <= (perfilTecnico.calificacionPromedio || 5)">★</span>
+              }
+            </div>
+            <strong class="rating-num">
+              {{ perfilTecnico.calificacionPromedio != null ? (perfilTecnico.calificacionPromedio | number:'1.1-1') : '5.0' }}
+            </strong>
+            <span class="divider">·</span>
+            <span class="jobs-count">
+              {{ perfilTecnico.totalTrabajosCompletados }} servicios completados
+            </span>
+            @if (perfilTecnico.esTecnicoNuevo) {
+              <span class="badge-new">Nuevo en TecniHub</span>
+            }
+          </div>
+
+          <div class="member-since">
+            📅 Miembro desde {{ perfilTecnico.miembroDesde }}
+          </div>
+        </div>
+
+        <div class="header-cta">
+          <a routerLink="/chat" class="contact-btn">
+            💬 Enviar Mensaje
+          </a>
+          <a routerLink="/agenda" class="agenda-btn">
+            📅 Mi Agenda Técnica
+          </a>
+        </div>
+      </header>
+
+      <!-- Ficha de Información del Técnico -->
+      <section class="section-block">
+        <h2>Detalles y Establecimiento</h2>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span>Modalidad de atención</span>
+            <strong>
+              {{ perfilTecnico.tieneNegocioFisico ? 'Taller / Establecimiento con Local Físico' : 'Servicio Técnico a Domicilio' }}
+            </strong>
+          </div>
+
+          @if (perfilTecnico.ubicacionNegocio) {
+            <div class="detail-item">
+              <span>Ubicación del establecimiento</span>
+              <strong>📍 {{ perfilTecnico.ubicacionNegocio }}</strong>
+            </div>
+          }
+
+          <div class="detail-item">
+            <span>Costo base de diagnóstico / cotización</span>
+            <strong class="price-val">
+              @if (perfilTecnico.costoDiagnostico != null) {
+                {{ perfilTecnico.costoDiagnostico | currency:'MXN':'symbol':'1.2-2' }}
+              } @else {
+                A convenir
+              }
+            </strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Agenda y Citas del Técnico -->
+      <section class="section-block">
+        <h2>Disponibilidad y Agenda Técnica</h2>
+        <div class="agenda-preview-box">
+          <div class="agenda-preview-icon">📅</div>
+          <div class="agenda-preview-content">
+            <h3>Itinerario y Citas Programadas</h3>
+            <p>Gestiona o revisa las visitas a domicilio agendadas, fechas y horarios de atención técnica.</p>
+          </div>
+          <a routerLink="/agenda" class="agenda-preview-link">
+            Abrir mi Agenda →
+          </a>
+        </div>
+      </section>
+
+      <!-- Especialidades -->
+      @if (perfilTecnico.especialidades && perfilTecnico.especialidades.length > 0) {
+        <section class="section-block">
+          <h2>Especialidades de Reparación</h2>
+          <div class="tags-row">
+            @for (esp of perfilTecnico.especialidades; track esp) {
+              <span class="tech-tag">🔧 {{ esp }}</span>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Galería de Evidencia de Trabajos -->
+      @if (perfilTecnico.evidenciaTrabajos && perfilTecnico.evidenciaTrabajos.length > 0) {
+        <section class="section-block">
+          <h2>Evidencia y Muestra de Trabajos Realizados</h2>
+          <div class="evidence-grid">
+            @for (item of perfilTecnico.evidenciaTrabajos; track item) {
+              <div class="evidence-item">
+                <a [href]="item" target="_blank" rel="noopener noreferrer" class="evidence-link">
+                  📷 Ver trabajo realizado →
+                </a>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Reseñas de Clientes -->
+      <section class="section-block">
+        <h2>Opiniones y Reseñas de Clientes ({{ perfilTecnico.resenas.length }})</h2>
+
+        @if (perfilTecnico.resenas.length === 0) {
+          <p class="empty-reviews">
+            Este técnico aún no tiene opiniones registradas. Los clientes pueden calificar su servicio una vez finalizado.
+          </p>
+        } @else {
+          <div class="reviews-list">
+            @for (resena of perfilTecnico.resenas; track resena.id) {
+              <div class="review-item">
+                <div class="review-top">
+                  <div class="stars">
+                    @for (s of [1, 2, 3, 4, 5]; track s) {
+                      <span [class.active]="s <= resena.calificacionEstrellas">★</span>
+                    }
+                  </div>
+                  <span class="review-time">{{ resena.fechaRelativa }}</span>
+                </div>
+
+                @if (resena.comentario) {
+                  <p class="review-text">"{{ resena.comentario }}"</p>
+                }
+
+                <div class="review-meta">
+                  <span>Por <strong>{{ resena.clienteNombre }}</strong></span>
+                  <span class="service-chip">{{ resena.tipoServicio }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </article>
+  } @else if (tipoPerfil === 'CLIENTE' && perfilCliente) {
+    <!-- Perfil Público del Cliente (HU-013 - Con anonimización y privacidad) -->
+    <article class="profile-card">
+      <header class="profile-header">
+        <div class="avatar-area">
+          <div class="avatar-fallback client">{{ inicial }}</div>
+        </div>
+
+        <div class="header-details">
+          <div class="name-row">
+            <h1>{{ perfilCliente.nombrePublico }}</h1>
+            <span class="role-badge client-badge">CLIENTE VERIFICADO</span>
+          </div>
+
+          <p class="privacy-note">
+            🛡️ Perfil protegido por las reglas de privacidad de TecniHub. Solo se muestra zona general.
+          </p>
+
+          <div class="member-since">
+            📅 Miembro desde {{ perfilCliente.miembroDesde }}
+          </div>
+        </div>
+      </header>
+
+      <section class="section-block">
+        <h2>Estadísticas de la Comunidad</h2>
+        <div class="details-grid">
+          <div class="detail-item">
+            <span>Zona geográfica aproximada</span>
+            <strong>📍 {{ perfilCliente.zonaAproximada }}</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Servicios de reparación solicitados</span>
+            <strong>{{ perfilCliente.serviciosSolicitados }} solicitudes</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Servicios completados exitosamente</span>
+            <strong>{{ perfilCliente.serviciosCompletados }} completados</strong>
+          </div>
+
+          <div class="detail-item">
+            <span>Tasa de interacciones exitosas</span>
+            <strong class="success-rate">{{ perfilCliente.porcentajeInteraccionesExitosas }}</strong>
+          </div>
+        </div>
+      </section>
+    </article>
+  }
+</main>

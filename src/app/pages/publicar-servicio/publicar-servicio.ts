@@ -9,10 +9,12 @@ import { PublicacionService } from '../../core/services/publicacion';
 import { CrearPublicacionServicioRequest } from '../../core/models/publicacion.models';
 const textoObligatorio = Validators.pattern(/\S/);
 
+import { Navbar } from '../../core/components/navbar/navbar';
+
 @Component({
   selector: 'app-publicar-servicio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Navbar],
   templateUrl: './publicar-servicio.html',
   styleUrl: './publicar-servicio.css'
 })

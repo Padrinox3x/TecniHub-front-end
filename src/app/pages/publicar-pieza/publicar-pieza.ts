@@ -7,10 +7,13 @@ import { finalize } from 'rxjs';
 import { PublicacionService } from '../../core/services/publicacion';
 import { CrearPublicacionPiezaRequest } from '../../core/models/publicacion.models';
 
+import { Navbar } from '../../core/components/navbar/navbar';
+import { DecimalNumberDirective } from '../../core/directives/decimal-number.directive';
+
 @Component({
   selector: 'app-publicar-pieza',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, Navbar, DecimalNumberDirective],
   templateUrl: './publicar-pieza.html',
   styleUrl: './publicar-pieza.css'
 })

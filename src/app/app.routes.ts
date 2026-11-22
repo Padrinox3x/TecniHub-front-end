@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
 
 import { Login } from './pages/login/login';
@@ -35,15 +34,49 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-  path: 'detalle-publicacion/:tipo/:id',
-  component: DetallePublicacion,
-  canActivate: [authGuard]
-},
+    path: 'detalle-publicacion/:tipo/:id',
+    component: DetallePublicacion,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'chat',
+    loadComponent: () =>
+      import('./pages/chat/chat').then((m) => m.Chat),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'agenda',
+    loadComponent: () =>
+      import('./pages/agenda/agenda').then((m) => m.Agenda),
+    canActivate: [authGuard, roleGuard],
+    data: {
+      roles: ['TECNICO']
+    }
+  },
+  {
+    path: 'perfil/tecnico/:id',
+    loadComponent: () =>
+      import('./pages/perfil-publico/perfil-publico').then((m) => m.PerfilPublico),
+    canActivate: [authGuard],
+    data: {
+      tipo: 'TECNICO'
+    }
+  },
+  {
+    path: 'perfil/cliente/:id',
+    loadComponent: () =>
+      import('./pages/perfil-publico/perfil-publico').then((m) => m.PerfilPublico),
+    canActivate: [authGuard],
+    data: {
+      tipo: 'CLIENTE'
+    }
+  },
   {
     path: 'publicar-servicio',
     loadComponent: () =>
-      import('./pages/publicar-servicio/publicar-servicio')
-        .then(m => m.PublicarServicio),
+      import('./pages/publicar-servicio/publicar-servicio').then(
+        (m) => m.PublicarServicio
+      ),
     canActivate: [authGuard, roleGuard],
     data: {
       roles: ['CLIENTE']
@@ -52,8 +85,9 @@ export const routes: Routes = [
   {
     path: 'publicar-pieza',
     loadComponent: () =>
-      import('./pages/publicar-pieza/publicar-pieza')
-        .then(m => m.PublicarPieza),
+      import('./pages/publicar-pieza/publicar-pieza').then(
+        (m) => m.PublicarPieza
+      ),
     canActivate: [authGuard, roleGuard],
     data: {
       roles: ['TECNICO']

@@ -52,8 +52,12 @@
           autocomplete="email"
           required
           email
+          [class.input-invalid]="email && !emailValido"
           [disabled]="loading"
         />
+        @if (email && !emailValido) {
+          <span class="field-error">Ingresa un formato de correo válido (ej. usuario@dominio.com)</span>
+        }
 
         <div class="password-heading">
           <label for="password">Contraseña</label>
@@ -84,7 +88,7 @@
 
         <button
           type="submit"
-          [disabled]="loading || loginForm.invalid"
+          [disabled]="loading || !formValido"
         >
           {{ loading ? 'Verificando...' : 'Iniciar sesión' }}
           <span>{{ loading ? '...' : '→' }}</span>

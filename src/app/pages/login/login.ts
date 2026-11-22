@@ -25,6 +25,15 @@ export class Login {
   errorMessage = '';
   successMessage = '';
 
+  get emailValido(): boolean {
+    if (!this.email) return true;
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(this.email.trim());
+  }
+
+  get formValido(): boolean {
+    return this.email.trim().length > 0 && this.emailValido && this.password.length > 0;
+  }
+
   iniciarSesion(): void {
     if (this.loading) {
       return;

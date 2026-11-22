@@ -151,7 +151,7 @@ form label {
 form input {
   width: 100%;
   height: 49px;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   padding: 0 15px;
   border: 1px solid #dce3ec;
   border-radius: 9px;
@@ -163,13 +163,23 @@ form input {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-form input::placeholder {
-  color: #a1aaba;
-}
-
 form input:focus {
   border-color: #2874b8;
   box-shadow: 0 0 0 3px #2874b81a;
+}
+
+.input-invalid {
+  border-color: #ef4444 !important;
+  background: #fff8f8 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+.field-error {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #dc2626;
+  margin: -12px 0 16px 2px;
 }
 
 form button {

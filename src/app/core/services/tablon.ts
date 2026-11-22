@@ -59,4 +59,25 @@ export class TablonService {
       `${this.apiUrl}/piezas/${id}`
     );
   }
+
+  aceptarServicio(id: number): Observable<TablonItem> {
+    return this.http.put<TablonItem>(
+      `${this.apiUrl}/servicios/${id}/aceptar`,
+      {}
+    );
+  }
+
+  finalizarServicio(id: number): Observable<TablonItem> {
+    return this.http.put<TablonItem>(
+      `${this.apiUrl}/servicios/${id}/finalizar`,
+      {}
+    );
+  }
+
+  finalizarPieza(id: number): Observable<TablonItem> {
+    return this.http.put<TablonItem>(
+      `${this.apiUrl}/piezas/${id}/finalizar`,
+      {}
+    );
+  }
 }

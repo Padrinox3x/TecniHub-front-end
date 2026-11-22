@@ -12,10 +12,12 @@ import { SessionService } from '../../core/services/session';
 import { PerfilResponse } from '../../core/models/perfil.models';
 import { finalize } from 'rxjs';
 
+import { Navbar } from '../../core/components/navbar/navbar';
+
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Navbar],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -81,6 +83,8 @@ export class Inicio implements OnInit {
   }
 
   esTecnico(): boolean {
-    return this.perfil?.rol?.toUpperCase() === 'TECNICO';
+    const rolSesion = this.sessionService.obtenerRol()?.toUpperCase();
+    const rolPerfil = this.perfil?.rol?.toUpperCase();
+    return rolSesion === 'TECNICO' || rolPerfil === 'TECNICO';
   }
 }

@@ -82,11 +82,11 @@
 
 .form-card,
 .feedback {
-  padding: 28px;
-  border: 1px solid #e8ebf1;
-  border-radius: 15px;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
   background: white;
-  box-shadow: 0 5px 20px #17203308;
+  box-shadow: 0 8px 30px -4px rgba(16, 44, 88, 0.07);
 }
 
 .field {
@@ -137,6 +137,32 @@
 .field-error {
   color: #dc2626;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.field input.input-invalid,
+.field select.input-invalid,
+.field textarea.input-invalid {
+  border-color: #ef4444;
+  background-color: #fff8f8;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.char-counter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-counter {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.char-counter.char-limit {
+  color: #ea580c;
+  font-weight: 700;
 }
 
 .optional {
@@ -159,23 +185,28 @@
 
 .primary-button,
 .cancel-button {
-  display: inline-block;
-  padding: 11px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 9999px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 750;
   text-decoration: none;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .primary-button {
-  background: #2563eb;
+  background: linear-gradient(135deg, #174c91 0%, #2563eb 100%);
   color: white;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
 }
 
-.primary-button:hover {
-  background: #1d4ed8;
+.primary-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #102c58 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
 }
 
 .primary-button:disabled {

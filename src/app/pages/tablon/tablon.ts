@@ -14,10 +14,12 @@ import {
   TablonFiltro
 } from '../../core/models/tablon.models';
 
+import { Navbar } from '../../core/components/navbar/navbar';
+
 @Component({
   selector: 'app-tablon',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Navbar],
   templateUrl: './tablon.html',
   styleUrl: './tablon.css'
 })
@@ -113,5 +115,17 @@ export class Tablon implements OnInit {
 
   obtenerColorTexto(color: string): string {
     return color || 'Sin clasificación';
+  }
+
+  obtenerRutaPerfilAutor(publicacion: TablonItem): string[] {
+    const esTecnico =
+      publicacion.autorRol?.toUpperCase() === 'TECNICO' ||
+      publicacion.tipoPublicacion?.toUpperCase() === 'PIEZA';
+    const tipo = esTecnico ? 'tecnico' : 'cliente';
+    return ['/perfil', tipo, String(publicacion.autorId)];
+  }
+
+  obtenerRutaPerfilTecnicoAsignado(tecnicoId: number): string[] {
+    return ['/perfil', 'tecnico', String(tecnicoId)];
   }
 }

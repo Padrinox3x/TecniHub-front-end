@@ -1,16 +1,7 @@
 
+<app-navbar></app-navbar>
+
 <main class="form-page">
-  <header class="topbar">
-    <a routerLink="/inicio" class="brand">
-      <span class="brand-icon">T</span>
-      <span>TecniHub</span>
-    </a>
-
-    <a routerLink="/tablon" class="nav-link">
-      Explorar publicaciones
-    </a>
-  </header>
-
   <section class="form-container">
     <div class="form-header">
       <p class="eyebrow">COMUNIDAD TECNIHUB</p>
@@ -44,6 +35,7 @@
               formControlName="nombrePieza"
               maxlength="150"
               placeholder="Ej. Motor para lavadora"
+              [class.input-invalid]="formulario.controls.nombrePieza.touched && formulario.controls.nombrePieza.invalid"
             />
 
             @if (formulario.controls.nombrePieza.touched &&
@@ -59,6 +51,7 @@
             <select
               id="categoriaAparato"
               formControlName="categoriaAparato"
+              [class.input-invalid]="formulario.controls.categoriaAparato.touched && formulario.controls.categoriaAparato.invalid"
             >
               <option value="">Selecciona una categoría</option>
               <option value="Refrigerador">Refrigerador</option>
@@ -84,6 +77,7 @@
             <select
               id="condicionPieza"
               formControlName="condicionPieza"
+              [class.input-invalid]="formulario.controls.condicionPieza.touched && formulario.controls.condicionPieza.invalid"
             >
               <option value="">Selecciona la condición</option>
               <option value="Nueva">Nueva</option>
@@ -120,22 +114,22 @@
               </label>
               <input
                 id="precio"
-                type="number"
+                type="text"
+                appDecimalNumber
+                [maxDecimals]="2"
                 formControlName="precio"
-                min="0"
-                max="99999999.99"
-                step="0.01"
                 placeholder="Ej. 850.00"
+                [class.input-invalid]="formulario.controls.precio.touched && formulario.controls.precio.invalid"
               />
 
               <span class="field-hint">
-                Puedes dejarlo vacío si deseas acordar el precio.
+                Solo números. Puedes usar hasta 2 decimales. Puedes dejarlo vacío si deseas acordar el precio.
               </span>
 
               @if (formulario.controls.precio.touched &&
                    formulario.controls.precio.invalid) {
                 <small class="field-error">
-                  El precio debe ser un número entre 0 y 99,999,999.99.
+                  El precio debe ser un número válido entre 0 y 99,999,999.99.
                 </small>
               }
             </div>
@@ -153,12 +147,13 @@
               formControlName="datosContacto"
               maxlength="255"
               placeholder="Teléfono, correo u otro medio de contacto"
+              [class.input-invalid]="formulario.controls.datosContacto.touched && formulario.controls.datosContacto.invalid"
             />
 
             @if (formulario.controls.datosContacto.touched &&
                  formulario.controls.datosContacto.invalid) {
               <small class="field-error">
-                Los datos de contacto son obligatorios.
+                Los datos de contacto son obligatorios (máximo 255 caracteres).
               </small>
             }
           </div>
@@ -174,8 +169,15 @@
               rows="4"
               maxlength="1000"
               placeholder="Describe las características, compatibilidad o detalles importantes de la pieza..."
+              [class.input-invalid]="formulario.controls.descripcionDetalle.touched && formulario.controls.descripcionDetalle.invalid"
             ></textarea>
-            <span class="field-hint">Máximo 1000 caracteres.</span>
+            <div class="char-counter-row">
+              <span class="field-hint">Máximo 1000 caracteres.</span>
+              <span class="char-counter"
+                [class.char-limit]="(formulario.controls.descripcionDetalle.value.length) >= 900">
+                {{ formulario.controls.descripcionDetalle.value.length }}/1000
+              </span>
+            </div>
 
             @if (formulario.controls.descripcionDetalle.touched &&
                  formulario.controls.descripcionDetalle.invalid) {
@@ -196,6 +198,7 @@
               formControlName="fotografia"
               maxlength="500"
               placeholder="https://ejemplo.com/imagen.jpg"
+              [class.input-invalid]="formulario.controls.fotografia.touched && formulario.controls.fotografia.invalid"
             />
             <span class="field-hint">
               Introduce una URL de imagen. Máximo 500 caracteres.
@@ -225,7 +228,7 @@
             <button
               type="submit"
               class="primary-button"
-              [disabled]="enviando"
+              [disabled]="enviando || formulario.invalid"
             >
               {{ enviando ? 'Publicando...' : 'Publicar pieza' }}
             </button>

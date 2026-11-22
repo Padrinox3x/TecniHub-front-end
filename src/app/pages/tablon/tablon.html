@@ -1,4 +1,6 @@
 
+<app-navbar></app-navbar>
+
 <main class="tablon-container">
 
   <header class="tablon-header">
@@ -109,7 +111,13 @@
 
               <div>
                 <span>Publicado por</span>
-                <strong>{{ publicacion.autorNombre }}</strong>
+                @if (publicacion.autorId) {
+                  <a [routerLink]="obtenerRutaPerfilAutor(publicacion)" class="author-link" title="Ver perfil público">
+                    <strong>👤 {{ publicacion.autorNombre }}</strong>
+                  </a>
+                } @else {
+                  <strong>{{ publicacion.autorNombre }}</strong>
+                }
               </div>
 
               <div>
@@ -136,7 +144,13 @@
               @if (publicacion.tecnicoAsignadoNombre) {
                 <div>
                   <span>Técnico asignado</span>
-                  <strong>{{ publicacion.tecnicoAsignadoNombre }}</strong>
+                  @if (publicacion.tecnicoAsignadoId) {
+                    <a [routerLink]="obtenerRutaPerfilTecnicoAsignado(publicacion.tecnicoAsignadoId)" class="author-link tech-link" title="Ver perfil del técnico">
+                      <strong>🔧 {{ publicacion.tecnicoAsignadoNombre }}</strong>
+                    </a>
+                  } @else {
+                    <strong>{{ publicacion.tecnicoAsignadoNombre }}</strong>
+                  }
                 </div>
               }
 

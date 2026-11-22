@@ -1,0 +1,152 @@
+<header class="navbar-header">
+  <div class="navbar-inner">
+    <!-- Brand -->
+    <a routerLink="/inicio" class="brand">
+      <div class="brand-icon">T</div>
+      <span class="brand-name">TecniHub</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="desktop-nav">
+      <a routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <span>Inicio</span>
+      </a>
+      <a routerLink="/tablon" routerLinkActive="active" class="nav-item">
+        <span>Tablón</span>
+      </a>
+      <a routerLink="/chat" routerLinkActive="active" class="nav-item">
+        <span>Mensajes</span>
+      </a>
+      @if (esTecnico) {
+        <a routerLink="/agenda" routerLinkActive="active" class="nav-item">
+          <span>Mi Agenda</span>
+        </a>
+      }
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="right-actions">
+      <!-- Publicar CTA -->
+      @if (esTecnico) {
+        <a routerLink="/publicar-pieza" class="publish-btn">
+          <span>Publicar Pieza</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      } @else {
+        <a routerLink="/publicar-servicio" class="publish-btn">
+          <span>Solicitar Servicio</span>
+          <span class="btn-arrow">→</span>
+        </a>
+      }
+
+      <!-- Centro de Notificaciones -->
+      <div class="notif-wrapper">
+        <button
+          type="button"
+          class="icon-button"
+          (click)="toggleNotificaciones()"
+          [attr.aria-expanded]="panelNotificacionesAbierto"
+          aria-label="Notificaciones"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          @if (noLeidasCount > 0) {
+            <span class="badge">{{ noLeidasCount }}</span>
+          }
+        </button>
+
+        <!-- Dropdown Notificaciones -->
+        @if (panelNotificacionesAbierto) {
+          <div class="notif-dropdown">
+            <div class="notif-header">
+              <h3>Notificaciones</h3>
+              <span class="notif-sub">{{ notificaciones.length }} recibidas</span>
+            </div>
+
+            <div class="notif-list">
+              @if (notificaciones.length === 0) {
+                <div class="notif-empty">
+                  <p>No tienes notificaciones pendientes.</p>
+                </div>
+              } @else {
+                @for (item of notificaciones; track item.id) {
+                  <div
+                    class="notif-item"
+                    [class.unread]="!item.leida"
+                    (click)="irANotificacion(item)"
+                  >
+                    <div class="notif-indicator" [style.background-color]="item.colorHex || '#3b82f6'"></div>
+                    <div class="notif-content">
+                      <div class="notif-title-row">
+                        <strong>{{ item.titulo }}</strong>
+                        <span class="notif-time">{{ item.fechaRelativa }}</span>
+                      </div>
+                      <p class="notif-msg">{{ item.mensaje }}</p>
+                    </div>
+                    @if (!item.leida) {
+                      <button
+                        type="button"
+                        class="mark-read-btn"
+                        (click)="marcarLeida(item, $event)"
+                        title="Marcar como leída"
+                      >
+                        ✓
+                      </button>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- User avatar & logout -->
+      <div class="user-profile-menu">
+        <div class="user-avatar" [title]="email">
+          {{ inicial }}
+        </div>
+        <span class="user-role-pill">{{ rol }}</span>
+        <button
+          type="button"
+          class="logout-link"
+          (click)="cerrarSesion()"
+          title="Cerrar sesión"
+        >
+          Salir
+        </button>
+      </div>
+
+      <!-- Mobile hamburger toggle -->
+      <button
+        type="button"
+        class="mobile-toggle"
+        (click)="toggleMenu()"
+        [attr.aria-expanded]="menuAbierto"
+        aria-label="Abrir menú"
+      >
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (menuAbierto) {
+    <nav class="mobile-nav">
+      <a routerLink="/inicio" (click)="menuAbierto = false" class="mobile-nav-item">Inicio</a>
+      <a routerLink="/tablon" (click)="menuAbierto = false" class="mobile-nav-item">Tablón</a>
+      <a routerLink="/chat" (click)="menuAbierto = false" class="mobile-nav-item">Mensajes</a>
+      @if (esTecnico) {
+        <a routerLink="/agenda" (click)="menuAbierto = false" class="mobile-nav-item">Mi Agenda</a>
+        <a routerLink="/publicar-pieza" (click)="menuAbierto = false" class="mobile-nav-item highlight">+ Publicar Pieza</a>
+      } @else {
+        <a routerLink="/publicar-servicio" (click)="menuAbierto = false" class="mobile-nav-item highlight">+ Solicitar Servicio</a>
+      }
+      <button type="button" (click)="cerrarSesion()" class="mobile-nav-item logout">Cerrar Sesión</button>
+    </nav>
+  }
+</header>
