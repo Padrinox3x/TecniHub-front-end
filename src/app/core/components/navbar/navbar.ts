@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SessionService } from '../../services/session';
 import { NotificacionesService } from '../../services/notificaciones';
@@ -8,7 +9,7 @@ import { Notificacion } from '../../models/notificacion.models';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
@@ -23,6 +24,23 @@ export class Navbar implements OnInit, OnDestroy {
   notificaciones: Notificacion[] = [];
   noLeidasCount = 0;
   private intervalId: any = null;
+
+  terminoBusqueda = '';
+
+  get usuarioId(): number | null {
+    return this.sessionService.obtenerSesion()?.usuarioId ?? null;
+  }
+
+  get nombreUsuario(): string {
+    const ses = this.sessionService.obtenerSesion();
+    return ses?.email ? ses.email.split('@')[0] : 'Usuario';
+  }
+
+  buscar(): void {
+    if (this.terminoBusqueda.trim()) {
+      this.router.navigate(['/tablon'], { queryParams: { q: this.terminoBusqueda.trim() } });
+    }
+  }
 
   get rol(): string {
     return this.sessionService.obtenerRol() ?? '';

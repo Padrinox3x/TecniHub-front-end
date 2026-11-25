@@ -1,21 +1,21 @@
 <app-navbar></app-navbar>
 
-<main class="agenda-container">
-  <header class="agenda-header">
-    <div class="header-titles">
+<main class="page">
+  <div class="page-heading">
+    <div>
       <span class="eyebrow">AGENDA PROFESIONAL</span>
       <h1>Mi Itinerario Técnico</h1>
-      <p class="subtitle">
+      <p>
         Gestiona tus citas programadas, visitas a domicilio y reparaciones agendadas.
       </p>
     </div>
 
-    <div class="header-actions">
-      <button type="button" class="schedule-btn" (click)="abrirModal()">
+    <div>
+      <button type="button" class="btn btn-primary" (click)="abrirModal()">
         + Programar Nueva Visita
       </button>
     </div>
-  </header>
+  </div>
 
   @if (mensajeExito) {
     <div class="alert-success">

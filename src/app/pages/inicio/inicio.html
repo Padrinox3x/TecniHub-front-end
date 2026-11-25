@@ -1,7 +1,6 @@
-
 <app-navbar></app-navbar>
 
-<main class="landing-main">
+<main class="page dashboard">
   @if (cargando) {
     <div class="status-card-loading">
       <div class="loader-spinner"></div>
@@ -11,541 +10,455 @@
     <div class="status-card error-card">
       <h2>Ocurrió un problema</h2>
       <p>{{ error }}</p>
-      <button class="primary-button" (click)="cargarPerfil()">
+      <button class="btn btn-primary mt-4" (click)="cargarPerfil()">
         Intentar nuevamente
       </button>
     </div>
   } @else {
-    <!-- HERO SECTION -->
-    <section class="hero-section">
-      <div class="hero-container">
-        <div class="hero-content">
-          <div class="badge-pill">
-            <span class="pill-dot">⚡</span>
-            <span>Rápido • Confiable • Especialistas Certificados</span>
-          </div>
+    <!-- WELCOME ROW -->
+    <div class="welcome-row">
+      <div>
+        <p class="eyebrow">{{ fechaHoy }}</p>
+        <h1>Hola, {{ obtenerNombre() }}. ¿Qué necesitas resolver hoy?</h1>
+        <p>Encuentra ayuda experta para cuidar lo que hace funcionar tu hogar.</p>
+      </div>
 
-          <h1 class="hero-title">
-            Soluciones Técnicas Expertas para tus
-            <span class="text-highlight">Electrodomésticos y Hogar</span>
-          </h1>
+      @if (esTecnico()) {
+        <a routerLink="/publicar-pieza" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nueva refacción
+        </a>
+      } @else {
+        <a routerLink="/publicar-servicio" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nueva solicitud
+        </a>
+      }
+    </div>
 
-          <p class="hero-subtitle">
-            Desde reparaciones urgentes hasta refacciones garantizadas. Conectamos dueños de hogar con técnicos especializados y confiables en tu comunidad.
-          </p>
+    <!-- HERO CARD -->
+    <section class="hero-card">
+      <div class="hero-copy">
+        <span class="badge badge-green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+          </svg>
+          Profesionales verificados
+        </span>
 
-          <div class="hero-actions">
-            @if (esTecnico()) {
-              <a routerLink="/publicar-pieza" class="btn-primary-cta">
-                <span>Publicar una Pieza</span>
-                <span class="btn-arrow">→</span>
-              </a>
-              <a routerLink="/agenda" class="btn-secondary-cta">
-                <span>📅 Ver mi Agenda</span>
-              </a>
-            } @else {
-              <a routerLink="/publicar-servicio" class="btn-primary-cta">
-                <span>Solicitar un Servicio</span>
-                <span class="btn-arrow">→</span>
-              </a>
-              <a routerLink="/tablon" class="btn-secondary-cta">
-                <span>🔍 Explorar Catálogo</span>
-              </a>
-            }
-          </div>
+        <h2>Tu hogar, en manos de expertos.</h2>
+        <p>Describe el problema y recibe propuestas de técnicos confiables cerca de ti.</p>
 
-          <!-- Feature Bullets Bar -->
-          <div class="hero-trust-bar">
-            <div class="trust-item">
-              <span class="trust-icon">🛡️</span>
-              <div class="trust-text">
-                <strong>Técnicos Verificados</strong>
-                <small>Especialistas locales</small>
-              </div>
-            </div>
-            <div class="trust-item">
-              <span class="trust-icon">⚡</span>
-              <div class="trust-text">
-                <strong>Atención Rápida</strong>
-                <small>Chat directo en vivo</small>
-              </div>
-            </div>
-            <div class="trust-item">
-              <span class="trust-icon">💰</span>
-              <div class="trust-text">
-                <strong>Cotización Clara</strong>
-                <small>Sin costos ocultos</small>
-              </div>
-            </div>
-            <div class="trust-item">
-              <span class="trust-icon">⭐</span>
-              <div class="trust-text">
-                <strong>100% Satisfacción</strong>
-                <small>Calificaciones reales</small>
-              </div>
-            </div>
-          </div>
+        <div class="hero-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+          </svg>
+          <input
+            type="text"
+            [(ngModel)]="busquedaHero"
+            (keyup.enter)="buscarAparato()"
+            placeholder="¿Qué electrodoméstico necesita reparación?"
+          />
+          <button type="button" (click)="buscarAparato()">Buscar ayuda</button>
         </div>
 
-        <!-- Hero Card Flotante Lateral -->
-        <div class="hero-card-side">
-          <div class="emergency-card">
-            <div class="card-glow"></div>
-            <div class="emergency-badge">¿Falla inesperada en casa?</div>
-            <h3>Encuentra Asistencia Técnica Inmediata</h3>
+        <div class="trust-row">
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+            Técnicos evaluados
+          </span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+            Presupuestos claros
+          </span>
+        </div>
+      </div>
+
+      <img
+        src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=900&q=80"
+        alt="Técnico especializado reparando equipo"
+      />
+    </section>
+
+    <!-- QUICK GRID -->
+    <div class="quick-grid">
+      @if (esTecnico()) {
+        <a routerLink="/agenda" class="quick-card">
+          <span class="quick-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" />
+            </svg>
+          </span>
+          <span>
+            <strong>Organizar mi agenda</strong>
+            <small>Gestiona tus citas e itinerarios</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" class="quick-card">
+          <span class="quick-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>Tomar servicios</strong>
+            <small>Explora solicitudes activas</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/publicar-pieza" class="quick-card">
+          <span class="quick-icon amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="M4 7v10l8 4 8-4V7M12 11v10" />
+            </svg>
+          </span>
+          <span>
+            <strong>Vender refacción</strong>
+            <small>Publica refacciones en catálogo</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+      } @else {
+        <a routerLink="/publicar-servicio" class="quick-card">
+          <span class="quick-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M8.5 10h7M8.5 14h5" />
+            </svg>
+          </span>
+          <span>
+            <strong>Solicitar reparación</strong>
+            <small>Publica tu problema y recibe ayuda</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" class="quick-card">
+          <span class="quick-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="8" r="3" /><path d="M3.5 19c.5-4 2-6 5.5-6s5 2 5.5 6M16 5.5a3 3 0 0 1 0 5.8M16.5 14c2.5.3 3.7 2 4 5" />
+            </svg>
+          </span>
+          <span>
+            <strong>Encontrar un técnico</strong>
+            <small>Explora profesionales verificados</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }" class="quick-card">
+          <span class="quick-icon amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="M4 7v10l8 4 8-4V7M12 11v10" />
+            </svg>
+          </span>
+          <span>
+            <strong>Buscar refacciones</strong>
+            <small>Piezas nuevas y usadas</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+      }
+    </div>
+
+    <!-- CATEGORIES -->
+    <section>
+      <div class="section-title">
+        <div>
+          <h2>¿Qué necesitas reparar?</h2>
+          <p>Explora especialistas por categoría</p>
+        </div>
+        <a routerLink="/tablon" class="text-action">
+          Ver todas
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14m-5-5 5 5-5 5" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="category-grid">
+        <button type="button" class="category-card" (click)="filtrarCategoria('Lavadoras')">
+          <span class="cat-icon cat-0">
+            <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+          </span>
+          <strong>Lavadoras</strong>
+          <small>Especialistas</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Refrigeradores')">
+          <span class="cat-icon cat-1">
+            <svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="2" /><path d="M8 13h16M20 8v2m0 7v3" /></svg>
+          </span>
+          <strong>Refrigeradores</strong>
+          <small>Línea de frío</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Aire acondicionado')">
+          <span class="cat-icon cat-2">
+            <svg viewBox="0 0 32 32"><path d="M16 3v26M5 9l22 14M27 9 5 23M12 5l4 4 4-4M12 27l4-4 4 4" /></svg>
+          </span>
+          <strong>Climatización</strong>
+          <small>Aire & frío</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Cocina')">
+          <span class="cat-icon cat-3">
+            <svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="25" rx="2" /><path d="M5 12h22M10 8h1m4 0h1m5 0h1" /><circle cx="16" cy="20" r="5" /></svg>
+          </span>
+          <strong>Cocina y hornos</strong>
+          <small>Gas & eléctricas</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Electrodomésticos')">
+          <span class="cat-icon cat-4">
+            <svg viewBox="0 0 32 32"><path d="M11 4v8m10-8v8M8 12h16v3a8 8 0 0 1-16 0v-3Zm8 11v6" /></svg>
+          </span>
+          <strong>Electrodomésticos</strong>
+          <small>Pequeños equipos</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Ver todas')">
+          <span class="cat-icon cat-5">
+            <svg viewBox="0 0 32 32"><rect x="4" y="4" width="9" height="9" rx="2" /><rect x="19" y="4" width="9" height="9" rx="2" /><rect x="4" y="19" width="9" height="9" rx="2" /><rect x="19" y="19" width="9" height="9" rx="2" /></svg>
+          </span>
+          <strong>Ver todas</strong>
+          <small>Catálogo total</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- CONTENT GRID (TECHS & ACTIVE SERVICE) -->
+    <div class="content-grid">
+      <section>
+        <div class="section-title">
+          <div>
+            <h2>Técnicos recomendados</h2>
+            <p>Especialistas con excelente reputación</p>
+          </div>
+          <a routerLink="/tablon" class="text-action">
+            Explorar catálogo
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m-5-5 5 5-5 5" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="tech-list">
+          <article class="tech-card" routerLink="/tablon">
+            <img
+              src="https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=400&q=80"
+              alt="Carlos Mendoza"
+            />
+            <div class="tech-info">
+              <div class="availability"><i></i> Disponible hoy</div>
+              <h3>
+                Carlos Mendoza
+                <span class="verified">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6" /></svg>
+                </span>
+              </h3>
+              <p>Lavadoras y refrigeración</p>
+              <div class="rating">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3Z" /></svg>
+                <strong>4.9</strong>
+                <span>(127 reseñas)</span>
+              </div>
+              <small>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                Roma Norte, CDMX
+              </small>
+            </div>
+            <button type="button" aria-label="Ver perfil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </article>
+
+          <article class="tech-card" routerLink="/tablon">
+            <img
+              src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=400&q=80"
+              alt="Miguel Ángel Ruiz"
+            />
+            <div class="tech-info">
+              <div class="availability"><i></i> Disponible mañana</div>
+              <h3>
+                Miguel Ángel Ruiz
+                <span class="verified">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6" /></svg>
+                </span>
+              </h3>
+              <p>Cocinas y línea blanca</p>
+              <div class="rating">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3Z" /></svg>
+                <strong>4.8</strong>
+                <span>(94 reseñas)</span>
+              </div>
+              <small>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                Del Valle, CDMX
+              </small>
+            </div>
+            <button type="button" aria-label="Ver perfil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <!-- ACTIVE REQUEST / AGENDA WIDGET -->
+      <section class="active-request">
+        <div class="section-title">
+          <h2>{{ esTecnico() ? 'Mi Próxima Cita' : 'Solicitud activa' }}</h2>
+          <a [routerLink]="esTecnico() ? '/agenda' : '/tablon'" class="text-action">
+            Ver seguimiento
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m-5-5 5 5-5 5" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="request-card">
+          <div class="request-head">
+            <span class="appliance-thumb">
+              <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+            </span>
+            <div>
+              <span class="badge badge-blue">EN PROCESO</span>
+              <h3>Lavadora no centrifuga</h3>
+              <p>Samsung · EcoBubble 18 kg</p>
+            </div>
+          </div>
+
+          <div class="progress-line">
+            <i></i><i></i><i class="muted"></i><i class="muted"></i>
+          </div>
+
+          <div class="request-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" />
+              </svg>
+              Visita: Hoy, 16:30 h
+            </span>
+            <span class="flex items-center gap-1.5 font-semibold text-slate-700">
+              <span class="avatar small">CM</span>
+              Carlos Mendoza
+            </span>
+          </div>
+
+          <a [routerLink]="esTecnico() ? '/agenda' : '/chat'" class="btn btn-secondary mt-3">
+            Ver detalles del servicio
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- FEATURED PARTS -->
+    <section>
+      <div class="section-title">
+        <div>
+          <h2>Refacciones destacadas</h2>
+          <p>Piezas compatibles, listas para entrega</p>
+        </div>
+        <a routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }" class="text-action">
+          Ver catálogo completo
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14m-5-5 5 5-5 5" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80"
+              alt="Motor para lavadora"
+            />
+            <span class="badge badge-green">Nueva</span>
+          </div>
+          <div>
+            <small>Compatible con Samsung</small>
+            <h3>Motor inverter para lavadora de carga frontal</h3>
+            <strong class="price">$1,480</strong>
             <p>
-              Publica el problema de tu lavadora, refrigerador o clima y recibe propuestas de técnicos certificados en minutos.
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              RefaHogar MX
             </p>
-            <div class="contact-pill">
-              <div class="contact-icon-circle">📞</div>
-              <div class="contact-pill-info">
-                <span>Soporte de la Comunidad</span>
-                <strong>Directo en TecniHub Chat</strong>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="card-action-link">
-              Ver solicitudes activas en el tablón →
-            </a>
           </div>
-        </div>
-      </div>
-    </section>
+        </article>
 
-    <!-- USER DASHBOARD / PANEL PERSONALIZADO -->
-    <section class="user-panel-section">
-      <div class="section-container">
-        <div class="panel-card-grid">
-          <!-- Tarjeta de Bienvenida y Perfil -->
-          <article class="user-profile-widget">
-            <div class="profile-header-strip">
-              <div class="avatar-large">
-                {{ obtenerNombre().charAt(0).toUpperCase() }}
-              </div>
-              <div class="user-id-box">
-                <div class="user-name-row">
-                  <h2>¡Hola, {{ obtenerNombre() }}!</h2>
-                  <span class="role-badge-pill" [class.tech]="esTecnico()">
-                    {{ perfil?.rol }}
-                  </span>
-                </div>
-                <p class="user-email-text">{{ perfil?.email }}</p>
-              </div>
-            </div>
-
-            <div class="user-meta-grid">
-              @if (perfil?.cliente) {
-                <div class="meta-item">
-                  <span class="meta-label">Teléfono de contacto</span>
-                  <strong class="meta-value">{{ perfil?.cliente?.telefono || 'No registrado' }}</strong>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Ubicación registrada</span>
-                  <strong class="meta-value">{{ perfil?.cliente?.direccion || 'No registrada' }}</strong>
-                </div>
-              }
-
-              @if (perfil?.tecnico) {
-                <div class="meta-item">
-                  <span class="meta-label">Teléfono directo</span>
-                  <strong class="meta-value">{{ perfil?.tecnico?.telefono || 'No registrado' }}</strong>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Local / Taller físico</span>
-                  <strong class="meta-value">{{ perfil?.tecnico?.tieneNegocioFisico ? 'Sí cuenta con local' : 'Servicio a domicilio' }}</strong>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Costo diagnóstico base</span>
-                  <strong class="meta-value price-highlight">
-                    {{ perfil?.tecnico?.costoCotizacion != null ? (perfil?.tecnico?.costoCotizacion | currency:'MXN':'symbol':'1.2-2') : 'A convenir' }}
-                  </strong>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Ubicación del taller</span>
-                  <strong class="meta-value">{{ perfil?.tecnico?.ubicacionEstablecimiento || 'A domicilio' }}</strong>
-                </div>
-              }
-            </div>
-          </article>
-
-          <!-- Acciones Rápidas del Usuario -->
-          <div class="user-quick-actions">
-            <div class="quick-actions-header">
-              <span class="eyebrow-small">— TU ESPACIO DE TRABAJO —</span>
-              <h3>Accesos Rápidos</h3>
-            </div>
-
-            <div class="action-buttons-stack">
-              @if (esTecnico()) {
-                <a routerLink="/publicar-pieza" class="quick-action-tile primary-tile">
-                  <div class="tile-icon">🔧</div>
-                  <div class="tile-text">
-                    <strong>Publicar una Pieza</strong>
-                    <p>Ofrece refacciones o piezas usadas en venta o intercambio</p>
-                  </div>
-                  <span class="tile-arrow">→</span>
-                </a>
-
-                <a routerLink="/agenda" class="quick-action-tile">
-                  <div class="tile-icon">📅</div>
-                  <div class="tile-text">
-                    <strong>Mi Agenda Técnica</strong>
-                    <p>Administra visitas domiciliarias y citas programadas</p>
-                  </div>
-                  <span class="tile-arrow">→</span>
-                </a>
-              } @else {
-                <a routerLink="/publicar-servicio" class="quick-action-tile primary-tile">
-                  <div class="tile-icon">🛠️</div>
-                  <div class="tile-text">
-                    <strong>Solicitar un Servicio</strong>
-                    <p>Describe el problema y recibe ofertas de técnicos</p>
-                  </div>
-                  <span class="tile-arrow">→</span>
-                </a>
-
-                <a routerLink="/tablon" class="quick-action-tile">
-                  <div class="tile-icon">📋</div>
-                  <div class="tile-text">
-                    <strong>Explorar Tablón de Publicaciones</strong>
-                    <p>Encuentra piezas o servicios disponibles en tu zona</p>
-                  </div>
-                  <span class="tile-arrow">→</span>
-                </a>
-              }
-
-              <a routerLink="/chat" class="quick-action-tile">
-                <div class="tile-icon">💬</div>
-                <div class="tile-text">
-                  <strong>Mis Conversaciones</strong>
-                  <p>Mensajería directa para coordinar diagnósticos y entregas</p>
-                </div>
-                <span class="tile-arrow">→</span>
-              </a>
-            </div>
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=500&q=80"
+              alt="Bomba de drenaje"
+            />
+            <span class="badge badge-green">Nueva</span>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NUESTROS SERVICIOS (Grid idéntica a la imagen de referencia) -->
-    <section class="services-overview-section">
-      <div class="section-container">
-        <div class="section-center-header">
-          <span class="eyebrow-pill">— CATEGORÍAS ESPECIALIZADAS —</span>
-          <h2 class="section-title">
-            Brindamos Soluciones en <span class="text-highlight">Electrodomésticos</span>
-          </h2>
-          <p class="section-subtitle">
-            Cubre todas tus necesidades de mantenimiento, reparación y refacciones con técnicos calificados.
-          </p>
-        </div>
-
-        <div class="services-grid-six">
-          <!-- Card 1 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">❄️</div>
-              <div class="service-info-mini">
-                <h4>Refrigeración y Neveras</h4>
-                <p>Diagnóstico de compresores, fugas de gas, sensores y empaques.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar servicios</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-
-          <!-- Card 2 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">🧺</div>
-              <div class="service-info-mini">
-                <h4>Lavadoras y Secadoras</h4>
-                <p>Cambio de bandas, bombas de agua, transmisiones y tarjetas lógicas.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar servicios</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-
-          <!-- Card 3 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">🔥</div>
-              <div class="service-info-mini">
-                <h4>Estufas y Hornos</h4>
-                <p>Ajuste de espreas, válvulas de seguridad, quemadores y termopares.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar servicios</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-
-          <!-- Card 4 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">💨</div>
-              <div class="service-info-mini">
-                <h4>Aires Acondicionados</h4>
-                <p>Mantenimiento preventivo, limpieza de filtros y recarga de refrigerante.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar servicios</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-
-          <!-- Card 5 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">⚡</div>
-              <div class="service-info-mini">
-                <h4>Microondas y Enseres</h4>
-                <p>Magnetrones, fusibles de alta tensión, platos y capacitores.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar servicios</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-
-          <!-- Card 6 -->
-          <article class="service-box">
-            <div class="service-box-header">
-              <div class="service-icon-wrap">⚙️</div>
-              <div class="service-info-mini">
-                <h4>Refacciones y Piezas</h4>
-                <p>Venta o intercambio de piezas originales nuevas, reacondicionadas o para reparar.</p>
-              </div>
-            </div>
-            <a routerLink="/tablon" class="service-link">
-              <span>Explorar refacciones</span>
-              <span class="arrow">→</span>
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- CÓMO FUNCIONA / 4 STEP PROCESS (Idéntico a la imagen) -->
-    <section class="process-section">
-      <div class="section-container">
-        <div class="section-center-header">
-          <span class="eyebrow-pill">— CÓMO FUNCIONA —</span>
-          <h2 class="section-title">
-            Nuestro Proceso en <span class="text-highlight">4 Simples Pasos</span>
-          </h2>
-          <p class="section-subtitle">
-            Una forma transparente y organizada de resolver cualquier falla en tu hogar.
-          </p>
-        </div>
-
-        <div class="steps-container">
-          <!-- Step 1 -->
-          <div class="step-card">
-            <div class="step-number-circle">01</div>
-            <h3>Publica tu Solicitud</h3>
-            <p>Describe el electrodoméstico y la falla con detalles y ubicación aproximada.</p>
-          </div>
-
-          <div class="step-connector">→</div>
-
-          <!-- Step 2 -->
-          <div class="step-card">
-            <div class="step-number-circle">02</div>
-            <h3>Conecta con Técnicos</h3>
-            <p>Especialistas revisan tu solicitud y se ponen en contacto mediante chat directo.</p>
-          </div>
-
-          <div class="step-connector">→</div>
-
-          <!-- Step 3 -->
-          <div class="step-card">
-            <div class="step-number-circle">03</div>
-            <h3>Agenda y Repara</h3>
-            <p>Acuerda fecha, diagnóstico en domicilio o visita a taller con horario pactado.</p>
-          </div>
-
-          <div class="step-connector">→</div>
-
-          <!-- Step 4 -->
-          <div class="step-card">
-            <div class="step-number-circle">04</div>
-            <h3>Califica el Servicio</h3>
-            <p>Confirma la conclusión exitosa del trabajo y califica la atención con estrellas.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- WHY CHOOSE US / BANNER AZUL MARINO OSCURO (Idéntico a la imagen) -->
-    <section class="why-us-banner">
-      <div class="section-container">
-        <div class="why-us-inner">
-          <div class="why-us-text-col">
-            <span class="eyebrow-light">— POR QUÉ ELEGIR TECNIHUB —</span>
-            <h2>La Diferencia de Confiar en Especialistas</h2>
+          <div>
+            <small>Universal / Varias marcas</small>
+            <h3>Bomba de drenaje universal reforzada 120V</h3>
+            <strong class="price">$620</strong>
             <p>
-              Vamos más allá de un simple directorio. Integramos itinerario, mensajería, control de piezas y reputación verificada para darte total tranquilidad.
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              ElectroPartes
             </p>
-
-            <div class="why-metrics-row">
-              <div class="metric-box">
-                <span class="metric-icon">🛡️</span>
-                <strong>Seguridad</strong>
-                <small>Técnicos evaluados</small>
-              </div>
-              <div class="metric-box">
-                <span class="metric-icon">⚡</span>
-                <strong>Rapidez</strong>
-                <small>Chat en tiempo real</small>
-              </div>
-              <div class="metric-box">
-                <span class="metric-icon">🔧</span>
-                <strong>Piezas</strong>
-                <small>Comunidad de refacciones</small>
-              </div>
-              <div class="metric-box">
-                <span class="metric-icon">⭐</span>
-                <strong>Reputación</strong>
-                <small>Opiniones verificadas</small>
-              </div>
-            </div>
           </div>
+        </article>
 
-          <div class="why-us-badge-card">
-            <div class="badge-icon-huge">🤝</div>
-            <h3>¡Tu Aliado Técnico Confiable!</h3>
-            <p>Comunidad activa de servicio técnico y venta de piezas en tu localidad.</p>
-            <a routerLink="/tablon" class="why-badge-btn">Explorar Tablón Ahora</a>
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=500&q=80"
+              alt="Tarjeta refrigerador"
+            />
+            <span class="badge badge-amber">Seminueva</span>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PREGUNTAS FRECUENTES (FAQ) -->
-    <section class="faq-section">
-      <div class="section-container">
-        <div class="faq-grid">
-          <div class="faq-intro">
-            <span class="eyebrow-pill">— PREGUNTAS FRECUENTES —</span>
-            <h2>¿Tienes Dudas? <br><span class="text-highlight">¡Tenemos Respuestas!</span></h2>
+          <div>
+            <small>Línea Inverter</small>
+            <h3>Tarjeta principal inverter para refrigerador</h3>
+            <strong class="price">$1,190</strong>
             <p>
-              Conoce cómo opera la plataforma TecniHub para clientes y técnicos especialistas.
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              Taller Especializado Juan R.
             </p>
-            <a routerLink="/chat" class="btn-faq-contact">Contactar por Chat →</a>
           </div>
-
-          <div class="faq-list">
-            <details class="faq-item" open>
-              <summary>¿Tiene algún costo publicar una solicitud de servicio?</summary>
-              <p>No, para los clientes publicar solicitudes de servicio en el tablón es totalmente gratuito.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary>¿Cómo acuerdo el costo de diagnóstico o reparación?</summary>
-              <p>El perfil de cada técnico muestra su tarifa base de cotización o diagnóstico. Puedes afinar detalles por el chat integrado antes de agendar la visita.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary>¿Puedo publicar piezas para intercambio?</summary>
-              <p>Sí, la plataforma permite publicar refacciones tanto para venta como para intercambio con otros técnicos y clientes.</p>
-            </details>
-
-            <details class="faq-item">
-              <summary>¿Cómo califico el trabajo realizado?</summary>
-              <p>Una vez concluido el servicio, el técnico solicita el cierre y tú como cliente podrás confirmarlo y otorgar de 1 a 5 estrellas junto con una reseña.</p>
-            </details>
-          </div>
-        </div>
+        </article>
       </div>
     </section>
-
-    <!-- BANNER FINAL CTA -->
-    <section class="final-cta-section">
-      <div class="section-container">
-        <div class="cta-banner-card">
-          <div class="cta-banner-content">
-            <h2>¿Necesitas reparar un electrodoméstico hoy?</h2>
-            <p>Conéctate con técnicos locales o encuentra la pieza que necesitas en minutos.</p>
-          </div>
-          <div class="cta-banner-actions">
-            @if (esTecnico()) {
-              <a routerLink="/publicar-pieza" class="btn-primary-cta">
-                Publicar Pieza Ahora →
-              </a>
-            } @else {
-              <a routerLink="/publicar-servicio" class="btn-primary-cta">
-                Publicar Solicitud →
-              </a>
-            }
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER MODERNO COMPLETO -->
-    <footer class="app-footer">
-      <div class="footer-container">
-        <div class="footer-grid">
-          <div class="footer-brand-col">
-            <div class="footer-logo">
-              <div class="footer-logo-icon">T</div>
-              <span class="footer-logo-text">TecniHub</span>
-            </div>
-            <p class="footer-desc">
-              Plataforma digital colaborativa para el diagnóstico, reparación de electrodomésticos y comercio de refacciones.
-            </p>
-            <div class="footer-social-icons">
-              <span class="social-circle">🌐</span>
-              <span class="social-circle">📘</span>
-              <span class="social-circle">📷</span>
-              <span class="social-circle">💼</span>
-            </div>
-          </div>
-
-          <div class="footer-links-col">
-            <h4>Navegación</h4>
-            <ul>
-              <li><a routerLink="/inicio">Inicio</a></li>
-              <li><a routerLink="/tablon">Tablón Comunitario</a></li>
-              <li><a routerLink="/chat">Mensajes Directos</a></li>
-              @if (esTecnico()) {
-                <li><a routerLink="/agenda">Mi Agenda Técnica</a></li>
-              }
-            </ul>
-          </div>
-
-          <div class="footer-links-col">
-            <h4>Servicios</h4>
-            <ul>
-              <li><a routerLink="/tablon">Refrigeración</a></li>
-              <li><a routerLink="/tablon">Lavado y Secado</a></li>
-              <li><a routerLink="/tablon">Estufas y Hornos</a></li>
-              <li><a routerLink="/tablon">Climatización</a></li>
-              <li><a routerLink="/tablon">Refacciones</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-contact-col">
-            <h4>Comunidad y Soporte</h4>
-            <p>📍 Soporte a nivel regional</p>
-            <p>💬 Chat en tiempo real disponible</p>
-            <p>✉️ soporte&#64;tecnihub.com</p>
-          </div>
-        </div>
-
-        <div class="footer-bottom">
-          <p>© 2026 TecniHub. Todos los derechos reservados. Diseñado con excelencia y confianza.</p>
-        </div>
-      </div>
-    </footer>
   }
 </main>

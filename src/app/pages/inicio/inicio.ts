@@ -1,5 +1,6 @@
 
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   Component,
   OnInit,
@@ -17,7 +18,7 @@ import { Navbar } from '../../core/components/navbar/navbar';
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, RouterLink, Navbar],
+  imports: [CommonModule, FormsModule, RouterLink, Navbar],
   templateUrl: './inicio.html',
   styleUrl: './inicio.css'
 })
@@ -30,6 +31,25 @@ export class Inicio implements OnInit {
   perfil: PerfilResponse | null = null;
   cargando = true;
   error = '';
+  busquedaHero = '';
+
+  get fechaHoy(): string {
+    const ahora = new Date();
+    const opciones: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+    return ahora.toLocaleDateString('es-MX', opciones).toUpperCase();
+  }
+
+  buscarAparato(): void {
+    if (this.busquedaHero.trim()) {
+      this.router.navigate(['/tablon'], { queryParams: { q: this.busquedaHero.trim() } });
+    } else {
+      this.router.navigate(['/tablon']);
+    }
+  }
+
+  filtrarCategoria(nombre: string): void {
+    this.router.navigate(['/tablon'], { queryParams: { q: nombre === 'Ver todas' ? '' : nombre } });
+  }
 
   ngOnInit(): void {
     this.cargarPerfil();

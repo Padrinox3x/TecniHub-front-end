@@ -1,59 +1,92 @@
 <header class="navbar-header">
   <div class="navbar-inner">
-    <!-- Brand -->
-    <a routerLink="/inicio" class="brand">
-      <div class="brand-icon">T</div>
-      <span class="brand-name">TecniHub</span>
+    <!-- BRAND LOGO -->
+    <a routerLink="/inicio" class="brand" (click)="menuAbierto = false">
+      <span class="brand-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 6.5a4 4 0 0 0-5-5l2.2 2.2-2.8 2.8-2.2-2.2a4 4 0 0 0 5 5L20 18l-2 2-8.3-8.3" />
+        </svg>
+      </span>
+      <span class="brand-text">Tecni<span class="brand-accent">Hub</span></span>
     </a>
 
-    <!-- Desktop Navigation -->
+    <!-- DESKTOP NAVIGATION -->
     <nav class="desktop-nav">
-      <a routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/inicio" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="m3 10 9-7 9 7" /><path d="M5 9v11h14V9M9 20v-6h6v6" />
+        </svg>
         <span>Inicio</span>
       </a>
-      <a routerLink="/tablon" routerLinkActive="active" class="nav-item">
+
+      <a routerLink="/tablon" routerLinkActive="active" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" />
+        </svg>
         <span>Tablón</span>
       </a>
-      <a routerLink="/chat" routerLinkActive="active" class="nav-item">
+
+      <a routerLink="/chat" routerLinkActive="active" class="nav-link">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M4 5h16v12H8l-4 4V5Z" />
+        </svg>
         <span>Mensajes</span>
+        @if (noLeidasCount > 0) {
+          <b class="nav-badge">{{ noLeidasCount }}</b>
+        }
       </a>
+
       @if (esTecnico) {
-        <a routerLink="/agenda" routerLinkActive="active" class="nav-item">
+        <a routerLink="/agenda" routerLinkActive="active" class="nav-link">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" />
+          </svg>
           <span>Mi Agenda</span>
         </a>
       }
     </nav>
 
-    <!-- Right Actions -->
+    <!-- RIGHT ACTIONS -->
     <div class="right-actions">
-      <!-- Publicar CTA -->
+      <!-- Search Input -->
+      <div class="nav-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="terminoBusqueda"
+          (keyup.enter)="buscar()"
+          placeholder="Buscar servicios..."
+        />
+      </div>
+
+      <!-- Action Button CTA -->
       @if (esTecnico) {
-        <a routerLink="/publicar-pieza" class="publish-btn">
-          <span>Publicar Pieza</span>
-          <span class="btn-arrow">→</span>
+        <a routerLink="/publicar-pieza" class="btn-publish">
+          <span>+ Publicar Refacción</span>
         </a>
       } @else {
-        <a routerLink="/publicar-servicio" class="publish-btn">
-          <span>Solicitar Servicio</span>
-          <span class="btn-arrow">→</span>
+        <a routerLink="/publicar-servicio" class="btn-publish">
+          <span>+ Solicitar Servicio</span>
         </a>
       }
 
-      <!-- Centro de Notificaciones -->
-      <div class="notif-wrapper">
+      <!-- Notifications -->
+      <div class="relative">
         <button
           type="button"
-          class="icon-button"
+          class="icon-btn"
           (click)="toggleNotificaciones()"
-          [attr.aria-expanded]="panelNotificacionesAbierto"
+          title="Notificaciones"
           aria-label="Notificaciones"
+          [attr.aria-expanded]="panelNotificacionesAbierto"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 9a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7" /><path d="M10 20h4" />
           </svg>
           @if (noLeidasCount > 0) {
-            <span class="badge">{{ noLeidasCount }}</span>
+            <span class="red-dot"></span>
           }
         </button>
 
@@ -77,7 +110,7 @@
                     [class.unread]="!item.leida"
                     (click)="irANotificacion(item)"
                   >
-                    <div class="notif-indicator" [style.background-color]="item.colorHex || '#3b82f6'"></div>
+                    <div class="notif-indicator" [style.background-color]="item.colorHex || '#2878f0'"></div>
                     <div class="notif-content">
                       <div class="notif-title-row">
                         <strong>{{ item.titulo }}</strong>
@@ -103,50 +136,99 @@
         }
       </div>
 
-      <!-- User avatar & logout -->
-      <div class="user-profile-menu">
-        <div class="user-avatar" [title]="email">
-          {{ inicial }}
-        </div>
-        <span class="user-role-pill">{{ rol }}</span>
+      <!-- User Avatar / Profile Menu -->
+      <div class="user-menu">
+        @if (usuarioId) {
+          <a [routerLink]="['/perfil-publico', usuarioId]" class="user-profile-pill" title="Ver mi perfil">
+            <span class="avatar-circle">{{ inicial }}</span>
+            <span class="user-info">
+              <strong class="user-name">{{ nombreUsuario }}</strong>
+              <small class="user-role">{{ rol }}</small>
+            </span>
+          </a>
+        } @else {
+          <div class="user-profile-pill">
+            <span class="avatar-circle">{{ inicial }}</span>
+            <span class="user-info">
+              <strong class="user-name">{{ nombreUsuario }}</strong>
+              <small class="user-role">{{ rol }}</small>
+            </span>
+          </div>
+        }
+
         <button
           type="button"
-          class="logout-link"
+          class="logout-btn"
           (click)="cerrarSesion()"
           title="Cerrar sesión"
+          aria-label="Cerrar sesión"
         >
-          Salir
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg>
         </button>
       </div>
 
-      <!-- Mobile hamburger toggle -->
+      <!-- Mobile Hamburger Button -->
       <button
         type="button"
-        class="mobile-toggle"
+        class="mobile-toggle-btn"
         (click)="toggleMenu()"
-        [attr.aria-expanded]="menuAbierto"
         aria-label="Abrir menú"
       >
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Menu -->
+  <!-- MOBILE DRAWER -->
   @if (menuAbierto) {
-    <nav class="mobile-nav">
-      <a routerLink="/inicio" (click)="menuAbierto = false" class="mobile-nav-item">Inicio</a>
-      <a routerLink="/tablon" (click)="menuAbierto = false" class="mobile-nav-item">Tablón</a>
-      <a routerLink="/chat" (click)="menuAbierto = false" class="mobile-nav-item">Mensajes</a>
-      @if (esTecnico) {
-        <a routerLink="/agenda" (click)="menuAbierto = false" class="mobile-nav-item">Mi Agenda</a>
-        <a routerLink="/publicar-pieza" (click)="menuAbierto = false" class="mobile-nav-item highlight">+ Publicar Pieza</a>
-      } @else {
-        <a routerLink="/publicar-servicio" (click)="menuAbierto = false" class="mobile-nav-item highlight">+ Solicitar Servicio</a>
-      }
-      <button type="button" (click)="cerrarSesion()" class="mobile-nav-item logout">Cerrar Sesión</button>
-    </nav>
+    <div class="mobile-drawer-overlay" (click)="menuAbierto = false"></div>
+    <div class="mobile-drawer">
+      <div class="mobile-drawer-header">
+        <span class="brand-text">Tecni<span class="brand-accent">Hub</span></span>
+        <button type="button" class="drawer-close" (click)="menuAbierto = false">✕</button>
+      </div>
+
+      <nav class="mobile-drawer-nav">
+        <a routerLink="/inicio" routerLinkActive="active" (click)="menuAbierto = false">
+          <span>Inicio</span>
+        </a>
+        <a routerLink="/tablon" routerLinkActive="active" (click)="menuAbierto = false">
+          <span>Tablón de Publicaciones</span>
+        </a>
+        <a routerLink="/chat" routerLinkActive="active" (click)="menuAbierto = false">
+          <span>Mensajes</span>
+          @if (noLeidasCount > 0) {
+            <span class="nav-badge">{{ noLeidasCount }}</span>
+          }
+        </a>
+        @if (esTecnico) {
+          <a routerLink="/agenda" routerLinkActive="active" (click)="menuAbierto = false">
+            <span>Mi Agenda</span>
+          </a>
+          <a routerLink="/publicar-pieza" (click)="menuAbierto = false" class="highlight-link">
+            <span>+ Publicar Refacción</span>
+          </a>
+        } @else {
+          <a routerLink="/publicar-servicio" (click)="menuAbierto = false" class="highlight-link">
+            <span>+ Solicitar Servicio</span>
+          </a>
+        }
+        @if (usuarioId) {
+          <a [routerLink]="['/perfil-publico', usuarioId]" (click)="menuAbierto = false">
+            <span>Mi Perfil</span>
+          </a>
+        }
+      </nav>
+
+      <div class="mobile-drawer-footer">
+        <button type="button" class="logout-link" (click)="cerrarSesion()">
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
   }
 </header>
