@@ -1,0 +1,331 @@
+<app-navbar></app-navbar>
+
+<main class="page detail-page">
+  <div class="top-nav">
+    <a routerLink="/tablon" class="back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+      Volver al tablón de publicaciones
+    </a>
+  </div>
+
+  @if (cargando) {
+    <section class="message-card">
+      <div class="loader"></div>
+      <p>Cargando información detallada...</p>
+    </section>
+  } @else if (error) {
+    <section class="message-card error-card">
+      <h2>Ocurrió un problema</h2>
+      <p>{{ error }}</p>
+      <a routerLink="/tablon" class="primary-btn">
+        Regresar al tablón
+      </a>
+    </section>
+  } @else if (publicacion) {
+
+    @if (mensajeExito) {
+      <div class="alert-success">
+        ✓ {{ mensajeExito }}
+      </div>
+    }
+
+    <article
+      class="detail-card"
+      [style.border-top-color]="publicacion.colorHex || '#cbd5e1'"
+    >
+      @if (publicacion.imagenUrl) {
+        <div class="image-container">
+          <img
+            [src]="publicacion.imagenUrl"
+            [alt]="publicacion.titulo"
+          />
+        </div>
+      }
+
+      <div class="detail-content">
+        <div class="detail-header">
+          <div>
+            <span class="type-badge">
+              {{ obtenerEtiquetaTipo() }}
+            </span>
+            <h1>{{ publicacion.titulo }}</h1>
+          </div>
+
+          <div class="header-badges">
+            <span
+              class="status-badge"
+              [class.completed]="publicacion.esCompletado"
+            >
+              {{ obtenerEtiquetaEstado() }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Barra de Acciones Principales -->
+        <div class="actions-toolbar">
+          <!-- Técnico: Aceptar Servicio -->
+          @if (puedeAceptarServicio) {
+            <button
+              type="button"
+              class="action-btn accept-btn"
+              (click)="aceptarServicio()"
+              [disabled]="accionEnProgreso"
+            >
+              ✓ Aceptar este Servicio
+            </button>
+          }
+
+          <!-- Técnico: Solicitar Cierre -->
+          @if (puedeSolicitarCierre) {
+            <button
+              type="button"
+              class="action-btn close-req-btn"
+              (click)="solicitarCierre()"
+              [disabled]="accionEnProgreso"
+            >
+              🔔 Solicitar Cierre al Cliente
+            </button>
+          }
+
+          <!-- Cliente: Confirmar Cierre y Calificar -->
+          @if (puedeConfirmarCierre) {
+            <button
+              type="button"
+              class="action-btn rate-btn"
+              (click)="abrirModalCalificar()"
+              [disabled]="accionEnProgreso"
+            >
+              ★ Confirmar y Calificar Servicio
+            </button>
+          }
+
+          <!-- Técnico: Agendar en Itinerario -->
+          @if (esTecnico && esServicio() && !publicacion.esCompletado) {
+            <button
+              type="button"
+              class="action-btn calendar-btn"
+              (click)="agendarCita()"
+            >
+              📅 Agendar en mi Itinerario
+            </button>
+          }
+
+          <!-- Técnico: Finalizar Pieza -->
+          @if (puedeFinalizarPieza) {
+            <button
+              type="button"
+              class="action-btn accept-btn"
+              (click)="finalizarPieza()"
+              [disabled]="accionEnProgreso"
+            >
+              ✓ Marcar como Vendida / Completada
+            </button>
+          }
+
+          <!-- Abrir Chat (Todos los usuarios autenticados) -->
+          <button
+            type="button"
+            class="action-btn chat-btn"
+            (click)="abrirChat()"
+          >
+            💬 Abrir Conversación de Chat
+          </button>
+        </div>
+
+        <section class="description-section">
+          <h2>
+            {{ esServicio() ? 'Descripción de la falla reportada' : 'Detalles de la refacción o pieza' }}
+          </h2>
+          <p>{{ publicacion.descripcion }}</p>
+        </section>
+
+        <section class="information-section">
+          <h2>Ficha de la publicación</h2>
+
+          <div class="information-grid">
+            <div class="information-item">
+              <span>Publicado por</span>
+              @if (esServicio() && publicacion.autorId) {
+                <a [routerLink]="['/perfil/cliente', publicacion.autorId]" class="profile-link">
+                  <strong>👤 {{ publicacion.autorNombre }}</strong>
+                  <small>Ver perfil de cliente →</small>
+                </a>
+              } @else if (!esServicio() && publicacion.autorId) {
+                <a [routerLink]="['/perfil/tecnico', publicacion.autorId]" class="profile-link">
+                  <strong>🔧 {{ publicacion.autorNombre }}</strong>
+                  <small>Ver perfil de técnico →</small>
+                </a>
+              } @else {
+                <strong>{{ publicacion.autorNombre }}</strong>
+              }
+            </div>
+
+            <div class="information-item">
+              <span>Tipo</span>
+              <strong>{{ obtenerEtiquetaTipo() }}</strong>
+            </div>
+
+            <div class="information-item">
+              <span>Modalidad</span>
+              <strong>{{ publicacion.modalidad }}</strong>
+            </div>
+
+            <div class="information-item">
+              <span>Estado actual</span>
+              <strong>{{ publicacion.estado }}</strong>
+            </div>
+
+            @if (esServicio() && publicacion.ubicacion) {
+              <div class="information-item">
+                <span>Ubicación aproximada</span>
+                <strong>📍 {{ publicacion.ubicacion }}</strong>
+              </div>
+            }
+
+            @if (!esServicio() && publicacion.precio != null) {
+              <div class="information-item">
+                <span>Precio venta</span>
+                <strong class="price-tag">
+                  {{ publicacion.precio | currency:'MXN':'symbol':'1.2-2' }}
+                </strong>
+              </div>
+            }
+
+            @if (publicacion.tecnicoAsignadoNombre) {
+              <div class="information-item">
+                <span>Técnico especialista asignado</span>
+                @if (publicacion.tecnicoAsignadoId) {
+                  <a [routerLink]="['/perfil/tecnico', publicacion.tecnicoAsignadoId]" class="profile-link">
+                    <strong>🔧 {{ publicacion.tecnicoAsignadoNombre }}</strong>
+                    <small>Ver perfil técnico →</small>
+                  </a>
+                } @else {
+                  <strong>{{ publicacion.tecnicoAsignadoNombre }}</strong>
+                }
+              </div>
+            }
+
+            <div class="information-item">
+              <span>Fecha de publicación</span>
+              <strong>
+                {{ publicacion.fechaPublicacion | date:'dd/MM/yyyy HH:mm' }}
+              </strong>
+            </div>
+
+            <div class="information-item">
+              <span>Código visual de tablón</span>
+              <div class="badge-row">
+                <span class="color-dot" [style.background-color]="publicacion.colorHex"></span>
+                <strong>{{ publicacion.codigoColor }}</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Reseña del Servicio si está completado -->
+        @if (resenaExistente) {
+          <section class="review-section">
+            <h2>Evaluación y Reseña del Servicio</h2>
+            <div class="review-card">
+              <div class="review-header">
+                <div class="stars">
+                  @for (s of [1,2,3,4,5]; track s) {
+                    <span [class.active]="s <= resenaExistente.calificacionEstrellas">★</span>
+                  }
+                </div>
+                <span class="review-date">{{ resenaExistente.fechaRelativa }}</span>
+              </div>
+              @if (resenaExistente.comentario) {
+                <p class="review-comment">"{{ resenaExistente.comentario }}"</p>
+              }
+              <div class="review-author">
+                Evaluado por <strong>{{ resenaExistente.clienteNombre }}</strong>
+              </div>
+            </div>
+          </section>
+        }
+
+        <div class="detail-footer">
+          <span
+            class="color-indicator"
+            [style.background-color]="publicacion.colorHex"
+          ></span>
+          <span>Folio de registro: #{{ publicacion.id }}</span>
+        </div>
+      </div>
+    </article>
+  }
+
+  <!-- Modal de Calificación con Estrellas (HU-014) -->
+  @if (modalCalificarAbierto) {
+    <div class="modal-overlay" (click)="cerrarModalCalificar()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Calificar el Servicio Realizado</h3>
+          <button type="button" class="close-btn" (click)="cerrarModalCalificar()">✕</button>
+        </div>
+
+        <p class="modal-desc">
+          Por favor califica el trabajo y profesionalismo del técnico para finalizar el servicio.
+        </p>
+
+        <!-- Selector de Estrellas Interactivas (1-5) -->
+        <div class="star-rating-selector">
+          @for (star of [1, 2, 3, 4, 5]; track star) {
+            <button
+              type="button"
+              class="star-btn"
+              [class.selected]="star <= calificacionSeleccionada"
+              (click)="seleccionarEstrella(star)"
+              [attr.aria-label]="star + ' estrellas'"
+            >
+              ★
+            </button>
+          }
+          <span class="rating-label">
+            {{ calificacionSeleccionada }} de 5 estrellas
+          </span>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-counter">
+            <label for="comentarioResena">Comentario u opinión (opcional):</label>
+            <span class="field-counter">{{ comentarioCalificacion.length }}/500</span>
+          </div>
+          <textarea
+            id="comentarioResena"
+            rows="3"
+            [(ngModel)]="comentarioCalificacion"
+            placeholder="Describe tu experiencia con el servicio recibido..."
+            maxlength="500"
+          ></textarea>
+        </div>
+
+        @if (errorCalificacion) {
+          <p class="modal-error">{{ errorCalificacion }}</p>
+        }
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="cerrarModalCalificar()"
+            [disabled]="enviandoCalificacion"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="confirm-btn"
+            (click)="confirmarCierreYCalificar()"
+            [disabled]="enviandoCalificacion"
+          >
+            {{ enviandoCalificacion ? 'Registrando...' : 'Emitir Calificación y Cerrar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</main>

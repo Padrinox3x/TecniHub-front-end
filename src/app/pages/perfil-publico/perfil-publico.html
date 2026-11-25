@@ -1,0 +1,318 @@
+<app-navbar></app-navbar>
+
+<main class="page detail-page">
+  <a routerLink="/tablon" class="back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+    Volver al tablón de publicaciones
+  </a>
+
+  @if (cargando) {
+    <div class="status-card">
+      <div class="spinner"></div>
+      <p>Consultando perfil público...</p>
+    </div>
+  } @else if (error) {
+    <div class="status-card error-card">
+      <h3 class="text-base font-bold text-slate-800">No fue posible cargar el perfil</h3>
+      <p class="text-xs text-slate-500 my-2">{{ error }}</p>
+      <a routerLink="/tablon" class="btn btn-primary mt-2">Regresar al tablón</a>
+    </div>
+  } @else if (tipoPerfil === 'TECNICO' && perfilTecnico) {
+    <!-- PERFIL HÉROE DEL TÉCNICO -->
+    <section class="profile-hero">
+      <div class="profile-photo">
+        @if (perfilTecnico.fotoUrl) {
+          <img [src]="perfilTecnico.fotoUrl" [alt]="perfilTecnico.nombreCompleto" />
+        } @else {
+          <img
+            src="https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=400&q=80"
+            [alt]="perfilTecnico.nombreCompleto"
+          />
+        }
+        <span><i></i> Disponible hoy</span>
+      </div>
+
+      <div class="profile-intro">
+        <span class="badge badge-blue">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+            <path d="m9 12 2 2 4-5" />
+          </svg>
+          IDENTIDAD VERIFICADA
+        </span>
+
+        <h1>
+          {{ perfilTecnico.nombreCompleto }}
+          <span class="verified">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </span>
+        </h1>
+
+        <p class="lead">
+          {{ perfilTecnico.mensajeReputacion || 'Especialista certificado en reparación de electrodomésticos' }}
+        </p>
+
+        <div class="profile-stats">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3Z" />
+            </svg>
+            <b>{{ perfilTecnico.calificacionPromedio != null ? (perfilTecnico.calificacionPromedio | number:'1.1-1') : '5.0' }}</b>
+            <small>{{ perfilTecnico.resenas ? perfilTecnico.resenas.length : 0 }} reseñas</small>
+          </span>
+
+          <span>
+            <b>{{ perfilTecnico.miembroDesde || 'Activo' }}</b>
+            <small>Miembro desde</small>
+          </span>
+
+          <span>
+            <b>{{ perfilTecnico.totalTrabajosCompletados }}</b>
+            <small>Servicios completados</small>
+          </span>
+        </div>
+
+        <div class="profile-meta">
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" />
+            </svg>
+            {{ perfilTecnico.ubicacionNegocio || 'Servicio a domicilio y taller' }}
+          </span>
+
+          @if (perfilTecnico.costoDiagnostico) {
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              Diagnóstico: ${{ perfilTecnico.costoDiagnostico }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <a routerLink="/chat" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 5h16v12H8l-4 4V5Z" />
+          </svg>
+          Enviar mensaje
+        </a>
+
+        <a routerLink="/publicar-servicio" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M8.5 10h7M8.5 14h5" />
+          </svg>
+          Solicitar servicio
+        </a>
+
+        <small>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+          </svg>
+          Respuesta promedio: 15 min
+        </small>
+      </div>
+    </section>
+
+    <!-- DETALLES, ESPECIALIDADES Y RESEÑAS -->
+    <div class="profile-layout">
+      <div>
+        <!-- ACERCA DE -->
+        <section class="panel">
+          <div class="section-title">
+            <h2>Especialidades Técnicas</h2>
+          </div>
+
+          <div class="specialty-grid">
+            @if (perfilTecnico.especialidades && perfilTecnico.especialidades.length > 0) {
+              @for (esp of perfilTecnico.especialidades; track esp) {
+                <span>
+                  <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+                  <b>{{ esp }}</b>
+                  <small>Diagnóstico & reparación</small>
+                </span>
+              }
+            } @else {
+              <span>
+                <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+                <b>Línea Blanca</b>
+                <small>Lavadoras y secadoras</small>
+              </span>
+              <span>
+                <svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="2" /><path d="M8 13h16M20 8v2m0 7v3" /></svg>
+                <b>Refrigeración</b>
+                <small>Convencional e Inverter</small>
+              </span>
+              <span>
+                <svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="25" rx="2" /><path d="M5 12h22M10 8h1m4 0h1m5 0h1" /><circle cx="16" cy="20" r="5" /></svg>
+                <b>Cocinas & Hornos</b>
+                <small>Gas y microondas</small>
+              </span>
+            }
+          </div>
+        </section>
+
+        <!-- TRABAJOS RECIENTES / EVIDENCIA -->
+        <section class="panel">
+          <div class="section-title">
+            <h2>Galería de trabajos y refacciones</h2>
+            <span class="text-action cursor-pointer">Ver galería</span>
+          </div>
+
+          <div class="work-gallery">
+            @if (perfilTecnico.evidenciaTrabajos && perfilTecnico.evidenciaTrabajos.length > 0) {
+              @for (foto of perfilTecnico.evidenciaTrabajos.slice(0, 3); track foto) {
+                <img [src]="foto" alt="Trabajo realizado" />
+              }
+            } @else {
+              <img src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=400&q=80" alt="Lavadora reparada" />
+              <img src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=400&q=80" alt="Refrigerador reparado" />
+              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80" alt="Motor y refacciones" />
+            }
+          </div>
+        </section>
+
+        <!-- RESEÑAS VERIFICADAS -->
+        <section class="panel">
+          <div class="section-title">
+            <div>
+              <h2>Reseñas verificadas</h2>
+              <p>{{ perfilTecnico.calificacionPromedio != null ? (perfilTecnico.calificacionPromedio | number:'1.1-1') : '5.0' }} de 5 · Opiniones de clientes</p>
+            </div>
+          </div>
+
+          @if (perfilTecnico.resenas && perfilTecnico.resenas.length > 0) {
+            @for (resena of perfilTecnico.resenas; track resena.id) {
+              <div class="review">
+                <div class="avatar small">{{ resena.clienteNombre ? resena.clienteNombre.slice(0, 2).toUpperCase() : 'CL' }}</div>
+                <div>
+                  <div>
+                    <strong>{{ resena.clienteNombre }}</strong>
+                    <span class="stars">★★★★★</span>
+                    <small>{{ resena.fechaRelativa || resena.fecha }}</small>
+                  </div>
+                  <p>{{ resena.comentario }}</p>
+                  <span class="badge badge-green">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6" /></svg>
+                    {{ resena.tipoServicio || 'Servicio verificado' }}
+                  </span>
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="py-8 text-center text-slate-500 text-xs">
+              Este profesional aún no cuenta con reseñas registradas. ¡Sé el primero en calificarlo al contratar un servicio!
+            </div>
+          }
+        </section>
+      </div>
+
+      <!-- ASIDE CREDENCIALES & HORARIO -->
+      <aside>
+        <section class="panel credentials">
+          <h3 class="mb-2">Garantías y Certificaciones</h3>
+          <p>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+            </svg>
+            <span>
+              <b>Técnico Certificado TecniHub</b>
+              <small>Identidad y antecedentes validados</small>
+            </span>
+          </p>
+          <p>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+            </svg>
+            <span>
+              <b>Garantía por Escrito</b>
+              <small>En mano de obra y refacciones</small>
+            </span>
+          </p>
+        </section>
+
+        <section class="panel schedule">
+          <h3 class="mb-2">Disponibilidad Habitual</h3>
+          <div>
+            <span>Lunes a Viernes</span>
+            <b>09:00 – 19:00</b>
+          </div>
+          <div>
+            <span>Sábados</span>
+            <b>09:00 – 15:00</b>
+          </div>
+          <div>
+            <span>Domingos</span>
+            <b>Cerrado / Emergencias</b>
+          </div>
+        </section>
+      </aside>
+    </div>
+  } @else if (tipoPerfil === 'CLIENTE' && perfilCliente) {
+    <!-- PERFIL CLIENTE -->
+    <section class="client-profile">
+      <div class="avatar">{{ inicial }}</div>
+      <div>
+        <h2>{{ perfilCliente.nombrePublico }}</h2>
+        <p>Miembro verificado de la comunidad TecniHub</p>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" />
+          </svg>
+          {{ perfilCliente.zonaAproximada || 'Ciudad de México y alrededores' }}
+        </span>
+      </div>
+
+      <div>
+        <span>
+          <b>{{ perfilCliente.serviciosSolicitados }}</b>
+          <small>Solicitudes</small>
+        </span>
+        <span>
+          <b>{{ perfilCliente.serviciosCompletados }}</b>
+          <small>Completados</small>
+        </span>
+      </div>
+    </section>
+
+    <div class="profile-layout">
+      <div>
+        <section class="panel">
+          <div class="section-title">
+            <h2>Resumen del Cliente</h2>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div class="flex items-center justify-between mb-2 text-xs">
+              <span class="text-slate-600">Porcentaje de interacciones exitosas:</span>
+              <strong class="text-blue-600 font-bold">{{ perfilCliente.porcentajeInteraccionesExitosas || '100%' }}</strong>
+            </div>
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-slate-600">Usuario frecuente:</span>
+              <strong class="text-emerald-600 font-bold">{{ perfilCliente.esUsuarioFrecuente ? 'Sí, verificado' : 'En proceso' }}</strong>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel contact-card">
+          <h3 class="mb-3">Información de la cuenta</h3>
+          <p>
+            <span>Tipo de perfil</span>
+            <b>Cliente registrado</b>
+          </p>
+          <p>
+            <span>Miembro desde</span>
+            <b>{{ perfilCliente.miembroDesde || 'Activo' }}</b>
+          </p>
+        </section>
+      </aside>
+    </div>
+  }
+</main>
