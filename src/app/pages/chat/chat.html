@@ -1,0 +1,162 @@
+<app-navbar></app-navbar>
+
+<div class="chat-page-container">
+  <div class="chat-layout">
+    <!-- Panel Izquierdo: Lista de Conversaciones -->
+    <aside class="conversations-sidebar">
+      <div class="sidebar-header">
+        <h2>Mis Mensajes</h2>
+        <span class="count-badge">{{ conversaciones.length }}</span>
+      </div>
+
+      <div class="conversations-list">
+        @if (cargandoConversaciones) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando chats...</p>
+          </div>
+        } @else if (conversaciones.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>Sin conversaciones aún</h3>
+            <p>
+              Cuando aceptes o solicites un servicio, podrás chatear directamente aquí.
+            </p>
+          </div>
+        } @else {
+          @for (conv of conversaciones; track conv.id) {
+            <article
+              class="conversation-item"
+              [class.active]="conversacionActiva?.id === conv.id"
+              (click)="seleccionarConversacion(conv)"
+            >
+              <div class="avatar-circle">
+                {{ obtenerNombreContraparte(conv).charAt(0).toUpperCase() }}
+              </div>
+
+              <div class="conversation-info">
+                <div class="conv-top">
+                  <h4 class="partner-name">{{ obtenerNombreContraparte(conv) }}</h4>
+                  <span class="partner-role">{{ obtenerRolContraparte(conv) }}</span>
+                </div>
+
+                <div class="context-tag">
+                  <span class="tag-badge" [class.service]="conv.tipoContexto === 'SERVICIO'">
+                    {{ conv.tipoContexto === 'SERVICIO' ? 'Servicio' : 'Pieza' }} #{{ conv.contextoId }}
+                  </span>
+                  <span class="context-title">{{ conv.tituloContexto }}</span>
+                </div>
+
+                <p class="last-message">
+                  {{ conv.ultimoMensaje || 'Conversación iniciada...' }}
+                </p>
+              </div>
+            </article>
+          }
+        }
+      </div>
+    </aside>
+
+    <!-- Panel Derecho: Sala de Chat Activa -->
+    <main class="chat-main">
+      @if (conversacionActiva || contextoIdDirecto) {
+        <!-- Cabecera de la Conversación -->
+        <header class="chat-header">
+          <div class="chat-header-info">
+            <h3>
+              {{ conversacionActiva ? obtenerNombreContraparte(conversacionActiva) : 'Conversación en curso' }}
+            </h3>
+            <div class="chat-subtitle">
+              <span class="badge-status">
+                {{ conversacionActiva?.estadoContexto || 'En curso' }}
+              </span>
+              <span>
+                {{ tipoContextoDirecto === 'SERVICIO' ? 'Servicio' : 'Pieza' }} #{{ contextoIdDirecto }}:
+                <strong>{{ conversacionActiva?.tituloContexto || 'Detalle' }}</strong>
+              </span>
+            </div>
+          </div>
+
+          <div class="header-actions">
+            @if (tipoContextoDirecto === 'SERVICIO') {
+              <a [routerLink]="['/detalle-publicacion/servicio', contextoIdDirecto]" class="view-item-btn">
+                Ver Servicio →
+              </a>
+            } @else {
+              <a [routerLink]="['/detalle-publicacion/pieza', contextoIdDirecto]" class="view-item-btn">
+                Ver Pieza →
+              </a>
+            }
+          </div>
+        </header>
+
+        <!-- Contenedor de Mensajes con Scroll -->
+        <div class="messages-container" #messagesContainer>
+          @if (cargandoMensajes) {
+            <div class="loading-state">
+              <div class="spinner"></div>
+              <p>Cargando mensajes...</p>
+            </div>
+          } @else if (mensajes.length === 0) {
+            <div class="no-messages-box">
+              <div class="bubble-icon">👋</div>
+              <h4>Inicia la conversación</h4>
+              <p>Escribe un mensaje para acordar detalles, dudas técnicas o visitas.</p>
+            </div>
+          } @else {
+            @for (msg of mensajes; track msg.id) {
+              <div
+                class="message-row"
+                [class.my-message]="msg.esMio || msg.emisorId === usuarioIdActual"
+              >
+                <div class="message-bubble">
+                  <div class="message-sender-row">
+                    <span class="sender-name">{{ msg.emisorNombre }}</span>
+                    <span class="sender-role">{{ msg.emisorRol }}</span>
+                  </div>
+
+                  <p class="message-text">{{ msg.contenido }}</p>
+
+                  <span class="message-time">{{ msg.horaFormateada }}</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <!-- Entrada de Mensaje -->
+        <footer class="chat-footer">
+          <form (ngSubmit)="enviar()" class="send-form">
+            <input
+              type="text"
+              name="mensaje"
+              [(ngModel)]="nuevoMensaje"
+              placeholder="Escribe tu mensaje aquí..."
+              autocomplete="off"
+              maxlength="1000"
+              [disabled]="enviando"
+              required
+            />
+            <button
+              type="submit"
+              class="send-btn"
+              [disabled]="!nuevoMensaje.trim() || enviando"
+            >
+              {{ enviando ? 'Enviando...' : 'Enviar' }}
+              <span>➤</span>
+            </button>
+          </form>
+        </footer>
+      } @else {
+        <!-- Estado Inicial sin Selección -->
+        <div class="no-selection-view">
+          <div class="icon-circle">💬</div>
+          <h2>Tus mensajes y acuerdos</h2>
+          <p>
+            Selecciona una conversación del panel izquierdo para comenzar a chatear.
+          </p>
+        </div>
+      }
+    </main>
+  </div>
+</div>
