@@ -1,0 +1,202 @@
+<app-navbar></app-navbar>
+
+<main class="page">
+  <!-- PAGE HEADING -->
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">COMUNIDAD TECNIHUB</p>
+      <h1>Tablón de publicaciones</h1>
+      <p>Descubre solicitudes de servicio y refacciones disponibles cerca de ti.</p>
+    </div>
+
+    @if (esTecnico) {
+      <a routerLink="/publicar-pieza" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Publicar refacción
+      </a>
+    } @else {
+      <a routerLink="/publicar-servicio" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Publicar solicitud
+      </a>
+    }
+  </div>
+
+  <!-- FILTER PANEL -->
+  <div class="filter-panel">
+    <div class="search-large">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+      </svg>
+      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
+        placeholder="Buscar por aparato, marca, modelo o refacción..."
+      />
+    </div>
+
+    <select [(ngModel)]="filtroModalidad" class="outline-none cursor-pointer">
+      <option value="TODAS">Modalidad: Todas</option>
+      <option value="Domicilio">A Domicilio</option>
+      <option value="Taller">En Taller</option>
+      <option value="Venta">Venta / Refacciones</option>
+    </select>
+
+    <label class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-600 cursor-pointer">
+      <input
+        type="checkbox"
+        [checked]="incluirCompletados"
+        (change)="cambiarCompletados($event)"
+      />
+      <span>Incluir completados</span>
+    </label>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button
+      type="button"
+      [class.active]="tipoSeleccionado === 'TODOS'"
+      (click)="cambiarTipo('TODOS')"
+    >
+      Todos
+      <span>{{ conteoTodos }}</span>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="tipoSeleccionado === 'SERVICIOS'"
+      (click)="cambiarTipo('SERVICIOS')"
+    >
+      Servicios
+      <span>{{ conteoServicios }}</span>
+    </button>
+
+    <button
+      type="button"
+      [class.active]="tipoSeleccionado === 'PIEZAS'"
+      (click)="cambiarTipo('PIEZAS')"
+    >
+      Refacciones
+      <span>{{ conteoPiezas }}</span>
+    </button>
+  </div>
+
+  @if (cargando) {
+    <div class="status-card-loading">
+      <div class="loader-spinner"></div>
+      <p>Actualizando publicaciones del tablón...</p>
+    </div>
+  } @else if (error) {
+    <div class="status-card error-card">
+      <h2>Ocurrió un problema</h2>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary mt-4" (click)="cargarPublicaciones()">
+        Intentar nuevamente
+      </button>
+    </div>
+  } @else {
+    <!-- BOARD LAYOUT -->
+    <div class="board-layout">
+      <!-- POST GRID -->
+      <div class="post-grid">
+        @if (publicacionesFiltradas.length === 0) {
+          <div class="col-span-2 py-16 text-center bg-white rounded-xl border border-slate-200">
+            <svg class="mx-auto w-12 h-12 text-slate-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+            </svg>
+            <h3 class="text-base font-bold text-slate-800">No se encontraron publicaciones</h3>
+            <p class="text-xs text-slate-500 mt-1">Prueba cambiando los filtros o el término de búsqueda.</p>
+          </div>
+        } @else {
+          @for (item of publicacionesFiltradas; track item.id) {
+            <article class="post-card">
+              <div class="post-image">
+                <img [src]="obtenerImagenPublicacion(item)" [alt]="item.titulo" />
+                <span
+                  class="badge"
+                  [ngClass]="item.tipoPublicacion === 'SERVICIO' ? 'badge-blue' : 'badge-green'"
+                >
+                  {{ obtenerEtiquetaTipo(item.tipoPublicacion) }}
+                </span>
+              </div>
+
+              <div class="post-body">
+                <div class="post-time">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                  </svg>
+                  <span>{{ item.estado || 'Disponible' }}</span>
+                </div>
+
+                <h3>{{ item.titulo }}</h3>
+                <p>{{ item.descripcion }}</p>
+
+                <div class="post-location">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" />
+                  </svg>
+                  <span>{{ item.ubicacion || item.modalidad || 'A convenir' }}</span>
+                </div>
+
+                <div class="post-footer">
+                  <span>
+                    <a
+                      [routerLink]="obtenerRutaPerfilAutor(item)"
+                      class="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors"
+                      title="Ver perfil del autor"
+                    >
+                      <span class="avatar small">{{ item.autorNombre.slice(0, 2).toUpperCase() }}</span>
+                      <strong>{{ item.autorNombre }}</strong>
+                    </a>
+                  </span>
+
+                  <a
+                    [routerLink]="['/detalle-publicacion', item.tipoPublicacion.toLowerCase(), item.id]"
+                    class="font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 text-xs"
+                  >
+                    Ver detalles
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14m-5-5 5 5-5 5" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+          }
+        }
+      </div>
+
+      <!-- BOARD SIDEBAR -->
+      <aside class="board-side">
+        <h3>Publica lo que necesitas</h3>
+        <p>Recibe respuestas rápidas de técnicos certificados y vendedores verificados.</p>
+
+        @if (esTecnico) {
+          <a routerLink="/publicar-pieza" class="btn btn-primary mt-3">
+            Crear publicación
+          </a>
+        } @else {
+          <a routerLink="/publicar-servicio" class="btn btn-primary mt-3">
+            Crear publicación
+          </a>
+        }
+
+        <div class="safety">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+            <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+            <path d="m9 12 2 2 4-5" />
+          </svg>
+          <div>
+            <strong>Compra y contrata seguro</strong>
+            <p>Mantén la comunicación dentro de TecniHub para validar la garantía.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</main>

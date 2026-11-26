@@ -1,0 +1,464 @@
+<app-navbar></app-navbar>
+
+<main class="page dashboard">
+  @if (cargando) {
+    <div class="status-card-loading">
+      <div class="loader-spinner"></div>
+      <p>Cargando tu experiencia TecniHub...</p>
+    </div>
+  } @else if (error) {
+    <div class="status-card error-card">
+      <h2>Ocurrió un problema</h2>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary mt-4" (click)="cargarPerfil()">
+        Intentar nuevamente
+      </button>
+    </div>
+  } @else {
+    <!-- WELCOME ROW -->
+    <div class="welcome-row">
+      <div>
+        <p class="eyebrow">{{ fechaHoy }}</p>
+        <h1>Hola, {{ obtenerNombre() }}. ¿Qué necesitas resolver hoy?</h1>
+        <p>Encuentra ayuda experta para cuidar lo que hace funcionar tu hogar.</p>
+      </div>
+
+      @if (esTecnico()) {
+        <a routerLink="/publicar-pieza" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nueva refacción
+        </a>
+      } @else {
+        <a routerLink="/publicar-servicio" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nueva solicitud
+        </a>
+      }
+    </div>
+
+    <!-- HERO CARD -->
+    <section class="hero-card">
+      <div class="hero-copy">
+        <span class="badge badge-green">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+          </svg>
+          Profesionales verificados
+        </span>
+
+        <h2>Tu hogar, en manos de expertos.</h2>
+        <p>Describe el problema y recibe propuestas de técnicos confiables cerca de ti.</p>
+
+        <div class="hero-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+          </svg>
+          <input
+            type="text"
+            [(ngModel)]="busquedaHero"
+            (keyup.enter)="buscarAparato()"
+            placeholder="¿Qué electrodoméstico necesita reparación?"
+          />
+          <button type="button" (click)="buscarAparato()">Buscar ayuda</button>
+        </div>
+
+        <div class="trust-row">
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+            Técnicos evaluados
+          </span>
+          <span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+            Presupuestos claros
+          </span>
+        </div>
+      </div>
+
+      <img
+        src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=900&q=80"
+        alt="Técnico especializado reparando equipo"
+      />
+    </section>
+
+    <!-- QUICK GRID -->
+    <div class="quick-grid">
+      @if (esTecnico()) {
+        <a routerLink="/agenda" class="quick-card">
+          <span class="quick-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" />
+            </svg>
+          </span>
+          <span>
+            <strong>Organizar mi agenda</strong>
+            <small>Gestiona tus citas e itinerarios</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" class="quick-card">
+          <span class="quick-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>Tomar servicios</strong>
+            <small>Explora solicitudes activas</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/publicar-pieza" class="quick-card">
+          <span class="quick-icon amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="M4 7v10l8 4 8-4V7M12 11v10" />
+            </svg>
+          </span>
+          <span>
+            <strong>Vender refacción</strong>
+            <small>Publica refacciones en catálogo</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+      } @else {
+        <a routerLink="/publicar-servicio" class="quick-card">
+          <span class="quick-icon blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4V2h6v2M8.5 10h7M8.5 14h5" />
+            </svg>
+          </span>
+          <span>
+            <strong>Solicitar reparación</strong>
+            <small>Publica tu problema y recibe ayuda</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" class="quick-card">
+          <span class="quick-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="8" r="3" /><path d="M3.5 19c.5-4 2-6 5.5-6s5 2 5.5 6M16 5.5a3 3 0 0 1 0 5.8M16.5 14c2.5.3 3.7 2 4 5" />
+            </svg>
+          </span>
+          <span>
+            <strong>Encontrar un técnico</strong>
+            <small>Explora profesionales verificados</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+
+        <a routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }" class="quick-card">
+          <span class="quick-icon amber">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m4 7 8-4 8 4-8 4-8-4Z" /><path d="M4 7v10l8 4 8-4V7M12 11v10" />
+            </svg>
+          </span>
+          <span>
+            <strong>Buscar refacciones</strong>
+            <small>Piezas nuevas y usadas</small>
+          </span>
+          <svg class="quick-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </a>
+      }
+    </div>
+
+    <!-- CATEGORIES -->
+    <section>
+      <div class="section-title">
+        <div>
+          <h2>¿Qué necesitas reparar?</h2>
+          <p>Explora especialistas por categoría</p>
+        </div>
+        <a routerLink="/tablon" class="text-action">
+          Ver todas
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14m-5-5 5 5-5 5" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="category-grid">
+        <button type="button" class="category-card" (click)="filtrarCategoria('Lavadoras')">
+          <span class="cat-icon cat-0">
+            <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+          </span>
+          <strong>Lavadoras</strong>
+          <small>Especialistas</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Refrigeradores')">
+          <span class="cat-icon cat-1">
+            <svg viewBox="0 0 32 32"><rect x="8" y="3" width="16" height="26" rx="2" /><path d="M8 13h16M20 8v2m0 7v3" /></svg>
+          </span>
+          <strong>Refrigeradores</strong>
+          <small>Línea de frío</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Aire acondicionado')">
+          <span class="cat-icon cat-2">
+            <svg viewBox="0 0 32 32"><path d="M16 3v26M5 9l22 14M27 9 5 23M12 5l4 4 4-4M12 27l4-4 4 4" /></svg>
+          </span>
+          <strong>Climatización</strong>
+          <small>Aire & frío</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Cocina')">
+          <span class="cat-icon cat-3">
+            <svg viewBox="0 0 32 32"><rect x="5" y="4" width="22" height="25" rx="2" /><path d="M5 12h22M10 8h1m4 0h1m5 0h1" /><circle cx="16" cy="20" r="5" /></svg>
+          </span>
+          <strong>Cocina y hornos</strong>
+          <small>Gas & eléctricas</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Electrodomésticos')">
+          <span class="cat-icon cat-4">
+            <svg viewBox="0 0 32 32"><path d="M11 4v8m10-8v8M8 12h16v3a8 8 0 0 1-16 0v-3Zm8 11v6" /></svg>
+          </span>
+          <strong>Electrodomésticos</strong>
+          <small>Pequeños equipos</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+
+        <button type="button" class="category-card" (click)="filtrarCategoria('Ver todas')">
+          <span class="cat-icon cat-5">
+            <svg viewBox="0 0 32 32"><rect x="4" y="4" width="9" height="9" rx="2" /><rect x="19" y="4" width="9" height="9" rx="2" /><rect x="4" y="19" width="9" height="9" rx="2" /><rect x="19" y="19" width="9" height="9" rx="2" /></svg>
+          </span>
+          <strong>Ver todas</strong>
+          <small>Catálogo total</small>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- CONTENT GRID (TECHS & ACTIVE SERVICE) -->
+    <div class="content-grid">
+      <section>
+        <div class="section-title">
+          <div>
+            <h2>Técnicos recomendados</h2>
+            <p>Especialistas con excelente reputación</p>
+          </div>
+          <a routerLink="/tablon" class="text-action">
+            Explorar catálogo
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m-5-5 5 5-5 5" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="tech-list">
+          <article class="tech-card" routerLink="/tablon">
+            <img
+              src="https://images.unsplash.com/photo-1540569014015-19a7be504e3a?auto=format&fit=crop&w=400&q=80"
+              alt="Carlos Mendoza"
+            />
+            <div class="tech-info">
+              <div class="availability"><i></i> Disponible hoy</div>
+              <h3>
+                Carlos Mendoza
+                <span class="verified">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6" /></svg>
+                </span>
+              </h3>
+              <p>Lavadoras y refrigeración</p>
+              <div class="rating">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3Z" /></svg>
+                <strong>4.9</strong>
+                <span>(127 reseñas)</span>
+              </div>
+              <small>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                Roma Norte, CDMX
+              </small>
+            </div>
+            <button type="button" aria-label="Ver perfil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </article>
+
+          <article class="tech-card" routerLink="/tablon">
+            <img
+              src="https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=400&q=80"
+              alt="Miguel Ángel Ruiz"
+            />
+            <div class="tech-info">
+              <div class="availability"><i></i> Disponible mañana</div>
+              <h3>
+                Miguel Ángel Ruiz
+                <span class="verified">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6" /></svg>
+                </span>
+              </h3>
+              <p>Cocinas y línea blanca</p>
+              <div class="rating">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 2.7 5.5 6 .9-4.4 4.2 1.1 6-5.4-2.8-5.4 2.8 1-6-4.3-4.2 6-.9L12 3Z" /></svg>
+                <strong>4.8</strong>
+                <span>(94 reseñas)</span>
+              </div>
+              <small>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                Del Valle, CDMX
+              </small>
+            </div>
+            <button type="button" aria-label="Ver perfil">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <!-- ACTIVE REQUEST / AGENDA WIDGET -->
+      <section class="active-request">
+        <div class="section-title">
+          <h2>{{ esTecnico() ? 'Mi Próxima Cita' : 'Solicitud activa' }}</h2>
+          <a [routerLink]="esTecnico() ? '/agenda' : '/tablon'" class="text-action">
+            Ver seguimiento
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m-5-5 5 5-5 5" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="request-card">
+          <div class="request-head">
+            <span class="appliance-thumb">
+              <svg viewBox="0 0 32 32"><rect x="5" y="3" width="22" height="26" rx="3" /><circle cx="16" cy="18" r="7" /><path d="M8 8h2m3 0h7" /></svg>
+            </span>
+            <div>
+              <span class="badge badge-blue">EN PROCESO</span>
+              <h3>Lavadora no centrifuga</h3>
+              <p>Samsung · EcoBubble 18 kg</p>
+            </div>
+          </div>
+
+          <div class="progress-line">
+            <i></i><i></i><i class="muted"></i><i class="muted"></i>
+          </div>
+
+          <div class="request-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="5" width="18" height="16" rx="2" /><path d="M8 3v4M16 3v4M3 10h18" />
+              </svg>
+              Visita: Hoy, 16:30 h
+            </span>
+            <span class="flex items-center gap-1.5 font-semibold text-slate-700">
+              <span class="avatar small">CM</span>
+              Carlos Mendoza
+            </span>
+          </div>
+
+          <a [routerLink]="esTecnico() ? '/agenda' : '/chat'" class="btn btn-secondary mt-3">
+            Ver detalles del servicio
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- FEATURED PARTS -->
+    <section>
+      <div class="section-title">
+        <div>
+          <h2>Refacciones destacadas</h2>
+          <p>Piezas compatibles, listas para entrega</p>
+        </div>
+        <a routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }" class="text-action">
+          Ver catálogo completo
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14m-5-5 5 5-5 5" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80"
+              alt="Motor para lavadora"
+            />
+            <span class="badge badge-green">Nueva</span>
+          </div>
+          <div>
+            <small>Compatible con Samsung</small>
+            <h3>Motor inverter para lavadora de carga frontal</h3>
+            <strong class="price">$1,480</strong>
+            <p>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              RefaHogar MX
+            </p>
+          </div>
+        </article>
+
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=500&q=80"
+              alt="Bomba de drenaje"
+            />
+            <span class="badge badge-green">Nueva</span>
+          </div>
+          <div>
+            <small>Universal / Varias marcas</small>
+            <h3>Bomba de drenaje universal reforzada 120V</h3>
+            <strong class="price">$620</strong>
+            <p>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              ElectroPartes
+            </p>
+          </div>
+        </article>
+
+        <article class="product-card" routerLink="/tablon" [queryParams]="{ tipo: 'PIEZA' }">
+          <div class="product-img">
+            <img
+              src="https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=500&q=80"
+              alt="Tarjeta refrigerador"
+            />
+            <span class="badge badge-amber">Seminueva</span>
+          </div>
+          <div>
+            <small>Línea Inverter</small>
+            <h3>Tarjeta principal inverter para refrigerador</h3>
+            <strong class="price">$1,190</strong>
+            <p>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3 5 6v5c0 5 2.8 8.4 7 10 4.2-1.6 7-5 7-10V6l-7-3Z" />
+              </svg>
+              Taller Especializado Juan R.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+  }
+</main>
