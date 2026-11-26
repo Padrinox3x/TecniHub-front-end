@@ -72,6 +72,12 @@ export const routes: Routes = [
     }
   },
   {
+    path: 'perfil-publico/:id',
+    loadComponent: () =>
+      import('./pages/perfil-publico/perfil-publico').then((m) => m.PerfilPublico),
+    canActivate: [authGuard]
+  },
+  {
     path: 'publicar-servicio',
     loadComponent: () =>
       import('./pages/publicar-servicio/publicar-servicio').then(

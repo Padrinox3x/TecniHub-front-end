@@ -24,6 +24,16 @@
   animation: spin 0.8s linear infinite;
 }
 
+.avatar.small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  font-size: 11px;
+  text-align: center;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

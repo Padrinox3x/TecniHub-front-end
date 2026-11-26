@@ -147,10 +147,11 @@
                   <span>
                     <a
                       [routerLink]="obtenerRutaPerfilAutor(item)"
+                      [state]="{ autorNombre: item.autorNombre, ubicacion: item.ubicacion }"
                       class="flex items-center gap-2 text-slate-700 hover:text-blue-600 transition-colors"
                       title="Ver perfil del autor"
                     >
-                      <span class="avatar small">{{ item.autorNombre.slice(0, 2).toUpperCase() }}</span>
+                      <span class="avatar small inline-flex items-center justify-center shrink-0 leading-none">{{ obtenerInicialAutor(item.autorNombre) }}</span>
                       <strong>{{ item.autorNombre }}</strong>
                     </a>
                   </span>

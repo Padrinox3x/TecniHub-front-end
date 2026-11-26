@@ -112,4 +112,12 @@ describe('Tablon Component (Integration & Navigation Tests)', () => {
     const ruta = component.obtenerRutaPerfilTecnicoAsignado(20);
     expect(ruta).toEqual(['/perfil', 'tecnico', '20']);
   });
+
+  it('obtenerInicialAutor() debe ignorar @ inicial y devolver la primera letra en mayúscula', () => {
+    expect(component.obtenerInicialAutor('@Rodrigo D.')).toBe('R');
+    expect(component.obtenerInicialAutor('@@carlos')).toBe('C');
+    expect(component.obtenerInicialAutor('Mario Técnico')).toBe('M');
+    expect(component.obtenerInicialAutor('')).toBe('U');
+    expect(component.obtenerInicialAutor(null)).toBe('U');
+  });
 });

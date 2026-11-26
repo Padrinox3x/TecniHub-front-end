@@ -182,4 +182,10 @@ export class Tablon implements OnInit {
   obtenerRutaPerfilTecnicoAsignado(tecnicoId: number): string[] {
     return ['/perfil', 'tecnico', String(tecnicoId)];
   }
+
+  obtenerInicialAutor(nombre?: string | null): string {
+    if (!nombre) return 'U';
+    const limpio = nombre.replace(/^@+/, '').trim();
+    return limpio ? limpio.charAt(0).toUpperCase() : 'U';
+  }
 }

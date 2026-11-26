@@ -55,7 +55,17 @@ export class Navbar implements OnInit, OnDestroy {
   }
 
   get inicial(): string {
-    return this.email.charAt(0).toUpperCase() || 'U';
+    const raw = this.email || this.nombreUsuario || 'U';
+    const limpio = raw.replace(/^@+/, '').trim();
+    return (limpio.charAt(0) || 'U').toUpperCase();
+  }
+
+  get rutaPerfil(): string[] {
+    if (!this.usuarioId) {
+      return ['/inicio'];
+    }
+    const tipo = this.esTecnico ? 'tecnico' : 'cliente';
+    return ['/perfil', tipo, String(this.usuarioId)];
   }
 
   ngOnInit(): void {

@@ -189,7 +189,7 @@
           @if (perfilTecnico.resenas && perfilTecnico.resenas.length > 0) {
             @for (resena of perfilTecnico.resenas; track resena.id) {
               <div class="review">
-                <div class="avatar small">{{ resena.clienteNombre ? resena.clienteNombre.slice(0, 2).toUpperCase() : 'CL' }}</div>
+                <div class="avatar small inline-flex items-center justify-center leading-none">{{ resena.clienteNombre ? resena.clienteNombre.replace('@', '').trim().slice(0, 1).toUpperCase() : 'C' }}</div>
                 <div>
                   <div>
                     <strong>{{ resena.clienteNombre }}</strong>
@@ -256,7 +256,7 @@
   } @else if (tipoPerfil === 'CLIENTE' && perfilCliente) {
     <!-- PERFIL CLIENTE -->
     <section class="client-profile">
-      <div class="avatar">{{ inicial }}</div>
+      <div class="avatar inline-flex items-center justify-center leading-none">{{ inicial }}</div>
       <div>
         <h2>{{ perfilCliente.nombrePublico }}</h2>
         <p>Miembro verificado de la comunidad TecniHub</p>

@@ -241,18 +241,23 @@
   border-radius: 50%;
   background: linear-gradient(135deg, var(--blue, #2878f0), var(--turquoise, #16b8a6));
   color: #ffffff;
-  display: grid;
-  place-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   font-size: 13px;
   font-weight: 800;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   text-align: left;
+  min-width: 0;
 }
 
 .user-name {
@@ -260,10 +265,11 @@
   font-weight: 700;
   color: var(--navy, #14243d);
   line-height: 1.2;
-  max-width: 100px;
+  max-width: 140px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
 
 .user-role {
@@ -272,6 +278,11 @@
   color: var(--gray, #64748b);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .logout-btn {

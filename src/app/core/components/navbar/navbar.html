@@ -139,8 +139,8 @@
       <!-- User Avatar / Profile Menu -->
       <div class="user-menu">
         @if (usuarioId) {
-          <a [routerLink]="['/perfil-publico', usuarioId]" class="user-profile-pill" title="Ver mi perfil">
-            <span class="avatar-circle">{{ inicial }}</span>
+          <a [routerLink]="rutaPerfil" class="user-profile-pill" title="Ver mi perfil">
+            <span class="avatar-circle flex items-center justify-center leading-none">{{ inicial }}</span>
             <span class="user-info">
               <strong class="user-name">{{ nombreUsuario }}</strong>
               <small class="user-role">{{ rol }}</small>
@@ -148,7 +148,7 @@
           </a>
         } @else {
           <div class="user-profile-pill">
-            <span class="avatar-circle">{{ inicial }}</span>
+            <span class="avatar-circle flex items-center justify-center leading-none">{{ inicial }}</span>
             <span class="user-info">
               <strong class="user-name">{{ nombreUsuario }}</strong>
               <small class="user-role">{{ rol }}</small>
@@ -218,7 +218,7 @@
           </a>
         }
         @if (usuarioId) {
-          <a [routerLink]="['/perfil-publico', usuarioId]" (click)="menuAbierto = false">
+          <a [routerLink]="rutaPerfil" (click)="menuAbierto = false">
             <span>Mi Perfil</span>
           </a>
         }
