@@ -5,11 +5,12 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { SessionService } from '../../services/session';
 import { NotificacionesService } from '../../services/notificaciones';
 import { Notificacion } from '../../models/notificacion.models';
+import { Breadcrumb } from '../breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, Breadcrumb],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })

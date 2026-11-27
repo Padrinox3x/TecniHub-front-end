@@ -1,0 +1,73 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  scrollbar-width: none;
+}
+
+.breadcrumb-list::-webkit-scrollbar {
+  display: none;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.breadcrumb-home-icon {
+  margin-right: 6px;
+  color: #2878f0;
+  flex-shrink: 0;
+}
+
+.breadcrumb-link {
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb-link:hover {
+  color: #2878f0;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 8px;
+  color: #94a3b8;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.breadcrumb-current {
+  color: #1e293b;
+  font-weight: 700;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

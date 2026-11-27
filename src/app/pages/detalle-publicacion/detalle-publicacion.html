@@ -35,14 +35,13 @@
       class="detail-card"
       [style.border-top-color]="publicacion.colorHex || '#cbd5e1'"
     >
-      @if (publicacion.imagenUrl) {
-        <div class="image-container">
-          <img
-            [src]="publicacion.imagenUrl"
-            [alt]="publicacion.titulo"
-          />
-        </div>
-      }
+      <div class="image-container">
+        <img
+          [src]="obtenerImagenDetalle()"
+          [alt]="publicacion.titulo"
+          (error)="onImagenError($event)"
+        />
+      </div>
 
       <div class="detail-content">
         <div class="detail-header">
@@ -98,17 +97,6 @@
               [disabled]="accionEnProgreso"
             >
               ★ Confirmar y Calificar Servicio
-            </button>
-          }
-
-          <!-- Técnico: Agendar en Itinerario -->
-          @if (esTecnico && esServicio() && !publicacion.esCompletado) {
-            <button
-              type="button"
-              class="action-btn calendar-btn"
-              (click)="agendarCita()"
-            >
-              📅 Agendar en mi Itinerario
             </button>
           }
 
@@ -325,6 +313,109 @@
             {{ enviandoCalificacion ? 'Registrando...' : 'Emitir Calificación y Cerrar' }}
           </button>
         </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal de Agendar en Itinerario Técnico -->
+  @if (modalAgendarAbierto && publicacion) {
+    <div class="modal-overlay" (click)="cerrarModalAgendar()">
+      <div class="modal-card modal-card-agenda" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <h3>📅 Agendar en mi Itinerario</h3>
+            <span class="modal-subtitle">Servicio #{{ publicacion.id }}: {{ publicacion.titulo }}</span>
+          </div>
+          <button type="button" class="close-btn" (click)="cerrarModalAgendar()">✕</button>
+        </div>
+
+        <p class="modal-desc">
+          Establece la fecha y ventana de horario estimada para la visita técnica a domicilio.
+        </p>
+
+        <form (ngSubmit)="guardarCita()">
+          <div class="form-group">
+            <label for="fechaCita">Fecha de la visita *</label>
+            <input
+              id="fechaCita"
+              name="fechaCita"
+              type="date"
+              [min]="hoy"
+              [(ngModel)]="formFecha"
+              required
+              [disabled]="guardandoCita"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="horaInicioCita">Hora de inicio *</label>
+              <input
+                id="horaInicioCita"
+                name="horaInicioCita"
+                type="time"
+                [(ngModel)]="formHoraInicio"
+                required
+                [disabled]="guardandoCita"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="horaFinCita">Hora fin estimada *</label>
+              <input
+                id="horaFinCita"
+                name="horaFinCita"
+                type="time"
+                [(ngModel)]="formHoraFin"
+                required
+                [class.input-invalid]="!horarioValido"
+                [disabled]="guardandoCita"
+              />
+            </div>
+          </div>
+
+          @if (!horarioValido) {
+            <span class="field-error">La hora de fin estimada debe ser posterior a la hora de inicio.</span>
+          }
+
+          <div class="form-group">
+            <label for="notasCita">Instrucciones o notas adicionales</label>
+            <textarea
+              id="notasCita"
+              name="notasCita"
+              rows="3"
+              [(ngModel)]="formNotas"
+              placeholder="Ej. Llevar multímetro, kit de herramientas y refacciones..."
+              [disabled]="guardandoCita"
+            ></textarea>
+          </div>
+
+          @if (advertenciaModalCita) {
+            <p class="modal-warning">⚠️ {{ advertenciaModalCita }}</p>
+          }
+
+          @if (errorModalCita) {
+            <p class="modal-error">✕ {{ errorModalCita }}</p>
+          }
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="cancel-btn"
+              (click)="cerrarModalAgendar()"
+              [disabled]="guardandoCita"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="save-btn"
+              [disabled]="guardandoCita || !formCitaValido"
+            >
+              {{ guardandoCita ? 'Agendando...' : 'Guardar en mi Agenda' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   }
