@@ -16,7 +16,7 @@ import {
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'https://localhost:7013/api/Auth';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/Auth';
 
   /**
    * Inicia sesión con las credenciales del usuario.

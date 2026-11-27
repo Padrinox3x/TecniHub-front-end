@@ -8,7 +8,7 @@ import { Notificacion, SuscripcionPushRequest } from '../models/notificacion.mod
 })
 export class NotificacionesService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7013/api/notificaciones';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/notificaciones';
 
   obtenerNotificaciones(soloNoLeidas = false): Observable<Notificacion[]> {
     let params = new HttpParams();

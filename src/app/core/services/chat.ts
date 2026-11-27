@@ -8,7 +8,7 @@ import { ConversacionResumen, Mensaje, EnviarMensajeRequest } from '../models/ch
 })
 export class ChatService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7013/api/chat';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/chat';
 
   obtenerMisConversaciones(): Observable<ConversacionResumen[]> {
     return this.http.get<ConversacionResumen[]>(`${this.apiUrl}/mis-conversaciones`);

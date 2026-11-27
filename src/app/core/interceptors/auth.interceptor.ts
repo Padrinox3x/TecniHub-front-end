@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Solo adjuntar el JWT a las peticiones de nuestra API.
   const isApiRequest = req.url.startsWith(
-    'https://localhost:7013/api/'
+    'https://d2c9vof7dxdez3.cloudfront.net/api/'
   );
 
   if (!token || !isApiRequest) {
