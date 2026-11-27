@@ -192,22 +192,71 @@
               Fotografía de la pieza
               <span class="optional">(Opcional)</span>
             </label>
-            <input
-              id="fotografia"
-              type="url"
-              formControlName="fotografia"
-              maxlength="500"
-              placeholder="https://ejemplo.com/imagen.jpg"
-              [class.input-invalid]="formulario.controls.fotografia.touched && formulario.controls.fotografia.invalid"
-            />
-            <span class="field-hint">
-              Introduce una URL de imagen. Máximo 500 caracteres.
-            </span>
 
-            @if (formulario.controls.fotografia.touched &&
-                 formulario.controls.fotografia.invalid) {
+            <!-- Input de archivo nativo oculto -->
+            <input
+              #fileInputPieza
+              id="fotografia"
+              type="file"
+              accept="image/png, image/jpeg, image/jpg, image/webp"
+              class="hidden-file-input"
+              (change)="onArchivoSeleccionado($event)"
+            />
+
+            @if (!archivoSeleccionado && !imagenPreviewUrl) {
+              <!-- Zona de carga de imagen -->
+              <div
+                class="upload-dropzone"
+                (click)="fileInputPieza.click()"
+                role="button"
+                tabindex="0"
+                (keydown.enter)="fileInputPieza.click()"
+              >
+                <div class="upload-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                </div>
+                <div class="upload-text">
+                  <p class="upload-title">
+                    <span class="upload-link">Haz clic para subir una imagen</span> o arrástrala aquí
+                  </p>
+                  <p class="upload-subtitle">Formatos permitidos: PNG, JPG, JPEG o WEBP (máx. 5 MB)</p>
+                </div>
+              </div>
+            } @else {
+              <!-- Vista previa de imagen seleccionada -->
+              <div class="image-preview-card">
+                <div class="preview-thumbnail">
+                  <img [src]="imagenPreviewUrl" alt="Vista previa de la pieza" />
+                </div>
+                <div class="preview-details">
+                  <div class="preview-header">
+                    <span class="preview-badge">Imagen lista</span>
+                    <button
+                      type="button"
+                      class="remove-image-btn"
+                      (click)="eliminarArchivo(fileInputPieza)"
+                      title="Quitar imagen"
+                    >
+                      ✕ Quitar imagen
+                    </button>
+                  </div>
+                  <strong class="preview-filename">{{ archivoSeleccionado?.name }}</strong>
+                  @if (archivoSeleccionado) {
+                    <span class="preview-filesize">
+                      {{ formatearTamano(archivoSeleccionado.size) }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (errorArchivo) {
               <small class="field-error">
-                La URL no puede superar los 500 caracteres.
+                {{ errorArchivo }}
               </small>
             }
           </div>

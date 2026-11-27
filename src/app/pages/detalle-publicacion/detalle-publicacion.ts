@@ -12,8 +12,12 @@ import { finalize } from 'rxjs';
 import { TablonService } from '../../core/services/tablon';
 import { SessionService } from '../../core/services/session';
 import { ResenaService } from '../../core/services/resena';
+import { ItinerarioService } from '../../core/services/itinerario';
+import { BreadcrumbService } from '../../core/services/breadcrumb';
+import { ImagenStorageService } from '../../core/services/imagen-storage';
 import { TablonItem } from '../../core/models/tablon.models';
 import { ResenaTecnico } from '../../core/models/resena.models';
+import { ProgramarItinerarioRequest } from '../../core/models/itinerario.models';
 
 import { Navbar } from '../../core/components/navbar/navbar';
 
@@ -30,6 +34,9 @@ export class DetallePublicacion implements OnInit {
   private readonly tablonService = inject(TablonService);
   private readonly sessionService = inject(SessionService);
   private readonly resenaService = inject(ResenaService);
+  private readonly itinerarioService = inject(ItinerarioService);
+  private readonly breadcrumbService = inject(BreadcrumbService, { optional: true });
+  private readonly imagenStorage = inject(ImagenStorageService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   publicacion: TablonItem | null = null;
@@ -39,6 +46,17 @@ export class DetallePublicacion implements OnInit {
   accionEnProgreso = false;
   error = '';
   mensajeExito = '';
+
+  // Modal Agendar en Itinerario
+  modalAgendarAbierto = false;
+  guardandoCita = false;
+  errorModalCita = '';
+  advertenciaModalCita = '';
+  formFecha = '';
+  formHoraInicio = '09:00';
+  formHoraFin = '11:00';
+  formNotas = '';
+  hoy = '';
 
   // Modal Calificación
   modalCalificarAbierto = false;
@@ -97,7 +115,24 @@ export class DetallePublicacion implements OnInit {
     return this.esTecnico && !this.publicacion.esCompletado && estado === 'DISPONIBLE';
   }
 
+  get horarioValido(): boolean {
+    if (!this.formHoraInicio || !this.formHoraFin) return true;
+    return this.formHoraFin > this.formHoraInicio;
+  }
+
+  get formCitaValido(): boolean {
+    return (
+      this.formFecha.length > 0 &&
+      this.formHoraInicio.length > 0 &&
+      this.formHoraFin.length > 0 &&
+      this.horarioValido
+    );
+  }
+
   ngOnInit(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.hoy = today;
+    this.formFecha = today;
     this.cargarDetalle();
   }
 
@@ -138,6 +173,9 @@ export class DetallePublicacion implements OnInit {
       .subscribe({
         next: (respuesta) => {
           this.publicacion = respuesta;
+          if (respuesta.titulo) {
+            this.breadcrumbService?.setUltimoLabel(respuesta.titulo);
+          }
           if (this.esServicio() && (respuesta.esCompletado || respuesta.estado.toUpperCase() === 'COMPLETADO')) {
             this.cargarResena(respuesta.id);
           }
@@ -174,15 +212,77 @@ export class DetallePublicacion implements OnInit {
 
     this.tablonService
       .aceptarServicio(this.publicacion.id)
-      .pipe(finalize(() => (this.accionEnProgreso = false)))
+      .pipe(finalize(() => {
+        this.accionEnProgreso = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
         next: (actualizado) => {
           this.publicacion = actualizado;
-          this.mensajeExito = '¡Has aceptado este servicio! Se ha asignado a tu perfil y el borde cambió a Verde.';
+          this.mensajeExito = '¡Has aceptado este servicio! Se ha asignado a tu perfil.';
+          this.abrirModalAgendar();
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.error = err.error?.mensaje || 'No fue posible aceptar el servicio.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  abrirModalAgendar(): void {
+    if (!this.formFecha) {
+      this.formFecha = this.hoy || new Date().toISOString().split('T')[0];
+    }
+    this.modalAgendarAbierto = true;
+    this.errorModalCita = '';
+    this.advertenciaModalCita = '';
+    this.cdr.markForCheck();
+  }
+
+  cerrarModalAgendar(): void {
+    this.modalAgendarAbierto = false;
+    this.cdr.markForCheck();
+  }
+
+  guardarCita(): void {
+    if (!this.publicacion || !this.formCitaValido) {
+      this.errorModalCita = 'Por favor completa todos los campos requeridos con un horario válido.';
+      return;
+    }
+
+    this.guardandoCita = true;
+    this.errorModalCita = '';
+    this.advertenciaModalCita = '';
+
+    const payload: ProgramarItinerarioRequest = {
+      servicioId: String(this.publicacion.id),
+      tecnicoId: String(this.usuarioIdActual ?? 1),
+      fecha: this.formFecha,
+      horaInicio: this.formHoraInicio,
+      horaFinEstimada: this.formHoraFin,
+      notas: this.formNotas.trim() || null
+    };
+
+    this.itinerarioService
+      .programarCita(payload)
+      .pipe(
+        finalize(() => {
+          this.guardandoCita = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.cerrarModalAgendar();
+          this.mensajeExito = '¡Cita agendada correctamente en tu itinerario técnico!';
+          if (res.advertencia) {
+            this.mensajeExito += ` (Nota: ${res.advertencia})`;
+          }
+          this.cargarDetalle();
+        },
+        error: (err) => {
+          this.errorModalCita = err.error?.mensaje || 'No fue posible registrar la cita en tu itinerario.';
           this.cdr.markForCheck();
         }
       });
@@ -282,9 +382,7 @@ export class DetallePublicacion implements OnInit {
 
   agendarCita(): void {
     if (!this.publicacion) return;
-    this.router.navigate(['/agenda'], {
-      queryParams: { servicioId: this.publicacion.id }
-    });
+    this.abrirModalAgendar();
   }
 
   esServicio(): boolean {
@@ -301,5 +399,24 @@ export class DetallePublicacion implements OnInit {
       this.publicacion?.estado ||
       'Sin estado'
     );
+  }
+
+  obtenerImagenDetalle(): string {
+    if (!this.publicacion) return '';
+    return this.imagenStorage.obtenerImagen(
+      this.publicacion.tipoPublicacion,
+      this.publicacion.imagenUrl,
+      this.publicacion.id,
+      this.publicacion.titulo
+    );
+  }
+
+  onImagenError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.src = this.esServicio()
+        ? 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=900&q=85'
+        : 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=85';
+    }
   }
 }
