@@ -11,7 +11,7 @@ export class NotificacionesService {
   private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/notificaciones';
 
   obtenerNotificaciones(soloNoLeidas = false): Observable<Notificacion[]> {
-    let params = new HttpParams();
+    let params = new HttpParams().set('_t', Date.now().toString());
     if (soloNoLeidas) {
       params = params.set('soloNoLeidas', true);
     }

@@ -35,14 +35,13 @@
       class="detail-card"
       [style.border-top-color]="publicacion.colorHex || '#cbd5e1'"
     >
-      @if (publicacion.imagenUrl) {
-        <div class="image-container">
-          <img
-            [src]="publicacion.imagenUrl"
-            [alt]="publicacion.titulo"
-          />
-        </div>
-      }
+      <div class="image-container">
+        <img
+          [src]="obtenerImagenDetalle()"
+          [alt]="publicacion.titulo"
+          (error)="onImagenError($event)"
+        />
+      </div>
 
       <div class="detail-content">
         <div class="detail-header">
@@ -98,17 +97,6 @@
               [disabled]="accionEnProgreso"
             >
               ★ Confirmar y Calificar Servicio
-            </button>
-          }
-
-          <!-- Técnico: Agendar en Itinerario -->
-          @if (esTecnico && esServicio() && !publicacion.esCompletado) {
-            <button
-              type="button"
-              class="action-btn calendar-btn"
-              (click)="agendarCita()"
-            >
-              📅 Agendar en mi Itinerario
             </button>
           }
 
@@ -323,6 +311,101 @@
             [disabled]="enviandoCalificacion"
           >
             {{ enviandoCalificacion ? 'Registrando...' : 'Emitir Calificación y Cerrar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Modal Agendar en mi Itinerario -->
+  @if (modalAgendarAbierto && publicacion) {
+    <div class="modal-backdrop">
+      <div class="modal-card modal-card-agenda">
+        <h3>📅 Agendar en mi Itinerario</h3>
+        <p class="modal-subtitle">
+          Folio: <strong>SERV-{{ publicacion.id }}</strong> · {{ publicacion.titulo }}
+        </p>
+
+        <div class="form-group">
+          <label for="agendaTitulo">Servicio</label>
+          <input
+            id="agendaTitulo"
+            type="text"
+            [value]="publicacion.titulo"
+            readonly
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="agendaFecha">Fecha programada *</label>
+          <input
+            id="agendaFecha"
+            type="date"
+            [(ngModel)]="formFecha"
+            [min]="hoy"
+            [class.input-invalid]="errorModalCita && (!formFecha || formFecha < hoy)"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="agendaHoraInicio">Hora de inicio *</label>
+            <input
+              id="agendaHoraInicio"
+              type="time"
+              [(ngModel)]="formHoraInicio"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="agendaHoraFin">Hora de finalización *</label>
+            <input
+              id="agendaHoraFin"
+              type="time"
+              [(ngModel)]="formHoraFin"
+              [class.input-invalid]="errorModalCita && formHoraFin <= formHoraInicio"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="agendaNotas">Notas adicionales (opcional)</label>
+          <textarea
+            id="agendaNotas"
+            rows="3"
+            [(ngModel)]="formNotas"
+            maxlength="500"
+            placeholder="Herramientas necesarias, refacciones o indicaciones de acceso..."
+          ></textarea>
+        </div>
+
+        @if (errorModalCita) {
+          <p class="modal-error">{{ errorModalCita }}</p>
+        }
+
+        @if (advertenciaModalCita) {
+          <p class="modal-warning">{{ advertenciaModalCita }}</p>
+        }
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="cerrarModalAgendar()"
+            [disabled]="guardandoCita"
+          >
+            Omitir por ahora
+          </button>
+          <button
+            type="button"
+            class="confirm-btn save-btn"
+            (click)="guardarCita()"
+            [disabled]="guardandoCita"
+          >
+            {{ guardandoCita ? 'Agendando...' : 'Confirmar y Agendar' }}
           </button>
         </div>
       </div>

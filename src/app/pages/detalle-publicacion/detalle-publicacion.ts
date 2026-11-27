@@ -12,8 +12,12 @@ import { finalize } from 'rxjs';
 import { TablonService } from '../../core/services/tablon';
 import { SessionService } from '../../core/services/session';
 import { ResenaService } from '../../core/services/resena';
+import { ItinerarioService } from '../../core/services/itinerario';
+import { BreadcrumbService } from '../../core/services/breadcrumb';
+import { ImagenStorageService } from '../../core/services/imagen-storage';
 import { TablonItem } from '../../core/models/tablon.models';
 import { ResenaTecnico } from '../../core/models/resena.models';
+import { ProgramarItinerarioRequest } from '../../core/models/itinerario.models';
 
 import { Navbar } from '../../core/components/navbar/navbar';
 
@@ -30,6 +34,9 @@ export class DetallePublicacion implements OnInit {
   private readonly tablonService = inject(TablonService);
   private readonly sessionService = inject(SessionService);
   private readonly resenaService = inject(ResenaService);
+  private readonly itinerarioService = inject(ItinerarioService);
+  private readonly breadcrumbService = inject(BreadcrumbService, { optional: true });
+  private readonly imagenStorage = inject(ImagenStorageService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   publicacion: TablonItem | null = null;
@@ -39,6 +46,17 @@ export class DetallePublicacion implements OnInit {
   accionEnProgreso = false;
   error = '';
   mensajeExito = '';
+
+  // Modal Agendar en Itinerario
+  modalAgendarAbierto = false;
+  guardandoCita = false;
+  errorModalCita = '';
+  advertenciaModalCita = '';
+  formFecha = '';
+  formHoraInicio = '09:00';
+  formHoraFin = '11:00';
+  formNotas = '';
+  hoy = '';
 
   // Modal Calificación
   modalCalificarAbierto = false;
@@ -138,6 +156,9 @@ export class DetallePublicacion implements OnInit {
       .subscribe({
         next: (respuesta) => {
           this.publicacion = respuesta;
+          if (respuesta?.titulo) {
+            this.breadcrumbService?.setUltimoLabel(respuesta.titulo);
+          }
           if (this.esServicio() && (respuesta.esCompletado || respuesta.estado.toUpperCase() === 'COMPLETADO')) {
             this.cargarResena(respuesta.id);
           }
@@ -178,11 +199,91 @@ export class DetallePublicacion implements OnInit {
       .subscribe({
         next: (actualizado) => {
           this.publicacion = actualizado;
-          this.mensajeExito = '¡Has aceptado este servicio! Se ha asignado a tu perfil y el borde cambió a Verde.';
+          this.mensajeExito = '¡Has aceptado este servicio! Ahora puedes agendar la visita en tu itinerario.';
+          this.abrirModalAgendar();
           this.cdr.markForCheck();
         },
         error: (err) => {
           this.error = err.error?.mensaje || 'No fue posible aceptar el servicio.';
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  abrirModalAgendar(): void {
+    const ahora = new Date();
+    const anio = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    this.hoy = `${anio}-${mes}-${dia}`;
+
+    this.formFecha = this.hoy;
+    this.formHoraInicio = '09:00';
+    this.formHoraFin = '11:00';
+    this.formNotas = '';
+    this.errorModalCita = '';
+    this.advertenciaModalCita = '';
+    this.modalAgendarAbierto = true;
+    this.cdr.markForCheck();
+  }
+
+  cerrarModalAgendar(): void {
+    this.modalAgendarAbierto = false;
+    this.errorModalCita = '';
+    this.advertenciaModalCita = '';
+    this.cdr.markForCheck();
+  }
+
+  guardarCita(): void {
+    if (!this.publicacion || this.guardandoCita) return;
+
+    this.errorModalCita = '';
+    this.advertenciaModalCita = '';
+
+    if (!this.formFecha || !this.formHoraInicio || !this.formHoraFin) {
+      this.errorModalCita = 'Debes completar la fecha, hora de inicio y hora de finalización.';
+      return;
+    }
+
+    if (this.formFecha < this.hoy) {
+      this.errorModalCita = 'La fecha no puede ser anterior al día actual.';
+      return;
+    }
+
+    if (this.formHoraFin <= this.formHoraInicio) {
+      this.errorModalCita = 'La hora de finalización debe ser posterior a la hora de inicio.';
+      return;
+    }
+
+    this.guardandoCita = true;
+    const payload: ProgramarItinerarioRequest = {
+      servicioId: String(this.publicacion.id),
+      tecnicoId: String(this.usuarioIdActual ?? 1),
+      fecha: this.formFecha,
+      horaInicio: this.formHoraInicio,
+      horaFinEstimada: this.formHoraFin,
+      notas: this.formNotas.trim() || null
+    };
+
+    this.itinerarioService
+      .programarCita(payload)
+      .pipe(
+        finalize(() => {
+          this.guardandoCita = false;
+          this.cdr.markForCheck();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.cerrarModalAgendar();
+          this.mensajeExito = '¡Cita agendada correctamente en tu itinerario técnico!';
+          if (res.advertencia) {
+            this.mensajeExito += ` (Nota: ${res.advertencia})`;
+          }
+          this.cargarDetalle();
+        },
+        error: (err) => {
+          this.errorModalCita = err.error?.mensaje || 'No fue posible registrar la cita en tu itinerario.';
           this.cdr.markForCheck();
         }
       });
@@ -282,9 +383,7 @@ export class DetallePublicacion implements OnInit {
 
   agendarCita(): void {
     if (!this.publicacion) return;
-    this.router.navigate(['/agenda'], {
-      queryParams: { servicioId: this.publicacion.id }
-    });
+    this.abrirModalAgendar();
   }
 
   esServicio(): boolean {
@@ -301,5 +400,26 @@ export class DetallePublicacion implements OnInit {
       this.publicacion?.estado ||
       'Sin estado'
     );
+  }
+
+  obtenerImagenDetalle(): string {
+    if (!this.publicacion) return '';
+    return this.imagenStorage.obtenerImagen(
+      this.publicacion.tipoPublicacion,
+      this.publicacion.imagenUrl,
+      this.publicacion.id,
+      this.publicacion.titulo
+    );
+  }
+
+  onImagenError(event: Event): void {
+    const target = event.target as HTMLImageElement | null;
+    if (!target) return;
+    const fallback = this.esServicio()
+      ? 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=900&q=85'
+      : 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=85';
+    if (target.src !== fallback) {
+      target.src = fallback;
+    }
   }
 }

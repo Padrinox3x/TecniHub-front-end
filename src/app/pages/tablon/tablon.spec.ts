@@ -120,4 +120,37 @@ describe('Tablon Component (Integration & Navigation Tests)', () => {
     expect(component.obtenerInicialAutor('')).toBe('U');
     expect(component.obtenerInicialAutor(null)).toBe('U');
   });
+
+  it('debe paginar de 6 en 6 publicaciones y reiniciar a página 1 al cambiar filtros', () => {
+    const diezItems: TablonItem[] = Array.from({ length: 10 }, (_, idx) => ({
+      ...mockPublicaciones[0],
+      id: idx + 1,
+      titulo: `Publicación ${idx + 1}`
+    }));
+
+    component.publicaciones = diezItems;
+    expect(component.elementosPorPagina).toBe(6);
+    expect(component.totalPaginas).toBe(2);
+    expect(component.paginasArray).toEqual([1, 2]);
+    expect(component.publicacionesPaginadas.length).toBe(6);
+    expect(component.indiceInicio).toBe(1);
+    expect(component.indiceFin).toBe(6);
+
+    component.cambiarPagina(2);
+    expect(component.paginaActual).toBe(2);
+    expect(component.publicacionesPaginadas.length).toBe(4);
+    expect(component.indiceInicio).toBe(7);
+    expect(component.indiceFin).toBe(10);
+
+    // No debe cambiar a páginas fuera de rango
+    component.cambiarPagina(0);
+    expect(component.paginaActual).toBe(2);
+    component.cambiarPagina(5);
+    expect(component.paginaActual).toBe(2);
+
+    // Reiniciar al cambiar filtros o pestaña
+    component.terminoBusqueda = 'Publicación';
+    component.alCambiarFiltros();
+    expect(component.paginaActual).toBe(1);
+  });
 });

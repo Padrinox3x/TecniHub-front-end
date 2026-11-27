@@ -3,7 +3,7 @@
 <div class="chat-page-container">
   <div class="chat-layout">
     <!-- Panel Izquierdo: Lista de Conversaciones -->
-    <aside class="conversations-sidebar">
+    <aside class="conversations-sidebar" [class.mobile-hide]="!mostrarListaEnMovil">
       <div class="sidebar-header">
         <h2>Mis Mensajes</h2>
         <span class="count-badge">{{ conversaciones.length }}</span>
@@ -31,7 +31,7 @@
               (click)="seleccionarConversacion(conv)"
             >
               <div class="avatar-circle">
-                {{ obtenerNombreContraparte(conv).charAt(0).toUpperCase() }}
+                {{ obtenerInicialContraparte(conv) }}
               </div>
 
               <div class="conversation-info">
@@ -58,22 +58,40 @@
     </aside>
 
     <!-- Panel Derecho: Sala de Chat Activa -->
-    <main class="chat-main">
+    <main class="chat-main" [class.mobile-hide]="mostrarListaEnMovil">
       @if (conversacionActiva || contextoIdDirecto) {
         <!-- Cabecera de la Conversación -->
         <header class="chat-header">
-          <div class="chat-header-info">
-            <h3>
-              {{ conversacionActiva ? obtenerNombreContraparte(conversacionActiva) : 'Conversación en curso' }}
-            </h3>
-            <div class="chat-subtitle">
-              <span class="badge-status">
-                {{ conversacionActiva?.estadoContexto || 'En curso' }}
-              </span>
-              <span>
-                {{ tipoContextoDirecto === 'SERVICIO' ? 'Servicio' : 'Pieza' }} #{{ contextoIdDirecto }}:
-                <strong>{{ conversacionActiva?.tituloContexto || 'Detalle' }}</strong>
-              </span>
+          <div class="chat-header-left">
+            <button
+              type="button"
+              class="mobile-back-btn"
+              (click)="volverAListaMovil()"
+              aria-label="Volver a conversaciones"
+              title="Volver a conversaciones"
+            >
+              ←
+            </button>
+
+            @if (conversacionActiva) {
+              <div class="avatar-circle header-avatar">
+                {{ obtenerInicialContraparte(conversacionActiva) }}
+              </div>
+            }
+
+            <div class="chat-header-info">
+              <h3>
+                {{ conversacionActiva ? obtenerNombreContraparte(conversacionActiva) : 'Conversación en curso' }}
+              </h3>
+              <div class="chat-subtitle">
+                <span class="badge-status">
+                  {{ conversacionActiva?.estadoContexto || 'En curso' }}
+                </span>
+                <span>
+                  {{ tipoContextoDirecto === 'SERVICIO' ? 'Servicio' : 'Pieza' }} #{{ contextoIdDirecto }}:
+                  <strong>{{ conversacionActiva?.tituloContexto || 'Detalle' }}</strong>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -90,7 +108,13 @@
           </div>
         </header>
 
-        <!-- Contenedor de Mensajes con Scroll -->
+        @if (error) {
+          <div class="chat-error-banner">
+            {{ error }}
+          </div>
+        }
+
+        <!-- Contenedor de Mensajes con Scroll Independiente -->
         <div class="messages-container" #messagesContainer>
           @if (cargandoMensajes) {
             <div class="loading-state">
@@ -105,14 +129,21 @@
             </div>
           } @else {
             @for (msg of mensajes; track msg.id) {
+              @if (msg.separadorFecha) {
+                <div class="date-separator">
+                  <span>{{ msg.separadorFecha }}</span>
+                </div>
+              }
+
               <div
                 class="message-row"
-                [class.my-message]="msg.esMio || msg.emisorId === usuarioIdActual"
+                [class.my-message]="esMensajeMio(msg)"
+                [class.their-message]="!esMensajeMio(msg)"
               >
                 <div class="message-bubble">
                   <div class="message-sender-row">
-                    <span class="sender-name">{{ msg.emisorNombre }}</span>
-                    <span class="sender-role">{{ msg.emisorRol }}</span>
+                    <span class="sender-name">{{ esMensajeMio(msg) ? 'Tú' : msg.emisorNombre }}</span>
+                    <span class="sender-role">{{ obtenerRolVisualMensaje(msg) }}</span>
                   </div>
 
                   <p class="message-text">{{ msg.contenido }}</p>
@@ -126,17 +157,21 @@
 
         <!-- Entrada de Mensaje -->
         <footer class="chat-footer">
+          @if (errorEnvio) {
+            <div class="send-error-banner">{{ errorEnvio }}</div>
+          }
           <form (ngSubmit)="enviar()" class="send-form">
-            <input
-              type="text"
+            <textarea
               name="mensaje"
+              rows="1"
               [(ngModel)]="nuevoMensaje"
-              placeholder="Escribe tu mensaje aquí..."
+              (keydown.enter)="onEnterKey($event)"
+              placeholder="Escribe tu mensaje aquí... (Enter para enviar)"
               autocomplete="off"
-              maxlength="1000"
+              maxlength="2000"
               [disabled]="enviando"
               required
-            />
+            ></textarea>
             <button
               type="submit"
               class="send-btn"

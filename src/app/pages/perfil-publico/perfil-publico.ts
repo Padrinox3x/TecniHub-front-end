@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 
 import { PerfilPublicoService } from '../../core/services/perfil-publico';
 import { SessionService } from '../../core/services/session';
+import { BreadcrumbService } from '../../core/services/breadcrumb';
 import { PerfilPublicoTecnico, PerfilPublicoCliente } from '../../core/models/resena.models';
 import { Navbar } from '../../core/components/navbar/navbar';
 
@@ -18,6 +19,7 @@ import { Navbar } from '../../core/components/navbar/navbar';
 export class PerfilPublico implements OnInit {
   private readonly perfilPublicoService = inject(PerfilPublicoService);
   private readonly sessionService = inject(SessionService);
+  private readonly breadcrumbService = inject(BreadcrumbService, { optional: true });
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -76,10 +78,14 @@ export class PerfilPublico implements OnInit {
         .subscribe({
           next: (res) => {
             this.perfilTecnico = res;
+            if (res?.nombreCompleto) {
+              this.breadcrumbService?.setUltimoLabel(res.nombreCompleto);
+            }
             this.cdr.markForCheck();
           },
           error: () => {
             this.perfilTecnico = this.crearPerfilTecnicoFallback(this.id);
+            this.breadcrumbService?.setUltimoLabel(this.perfilTecnico.nombreCompleto);
             this.error = '';
             this.cdr.markForCheck();
           }
@@ -96,10 +102,14 @@ export class PerfilPublico implements OnInit {
         .subscribe({
           next: (res) => {
             this.perfilCliente = res;
+            if (res?.nombrePublico) {
+              this.breadcrumbService?.setUltimoLabel(res.nombrePublico);
+            }
             this.cdr.markForCheck();
           },
           error: () => {
             this.perfilCliente = this.crearPerfilClienteFallback(this.id);
+            this.breadcrumbService?.setUltimoLabel(this.perfilCliente.nombrePublico);
             this.error = '';
             this.cdr.markForCheck();
           }
