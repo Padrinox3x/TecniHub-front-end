@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ConversacionResumen, Mensaje, EnviarMensajeRequest } from '../models/chat.models';
 
@@ -10,12 +10,20 @@ export class ChatService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/chat';
 
+  private noCacheParams(): HttpParams {
+    return new HttpParams().set('_t', Date.now().toString());
+  }
+
   obtenerMisConversaciones(): Observable<ConversacionResumen[]> {
-    return this.http.get<ConversacionResumen[]>(`${this.apiUrl}/mis-conversaciones`);
+    return this.http.get<ConversacionResumen[]>(`${this.apiUrl}/mis-conversaciones`, {
+      params: this.noCacheParams()
+    });
   }
 
   obtenerMensajesServicio(servicioId: number): Observable<Mensaje[]> {
-    return this.http.get<Mensaje[]>(`${this.apiUrl}/servicios/${servicioId}/mensajes`);
+    return this.http.get<Mensaje[]>(`${this.apiUrl}/servicios/${servicioId}/mensajes`, {
+      params: this.noCacheParams()
+    });
   }
 
   enviarMensajeServicio(servicioId: number, contenido: string): Observable<Mensaje> {
@@ -24,7 +32,9 @@ export class ChatService {
   }
 
   obtenerMensajesPieza(piezaId: number): Observable<Mensaje[]> {
-    return this.http.get<Mensaje[]>(`${this.apiUrl}/piezas/${piezaId}/mensajes`);
+    return this.http.get<Mensaje[]>(`${this.apiUrl}/piezas/${piezaId}/mensajes`, {
+      params: this.noCacheParams()
+    });
   }
 
   enviarMensajePieza(piezaId: number, contenido: string): Observable<Mensaje> {

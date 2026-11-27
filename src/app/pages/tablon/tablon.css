@@ -37,3 +37,142 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.board-main-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 16px;
+}
+
+.empty-state-card {
+  grid-column: 1 / -1;
+}
+
+/* Botón Ver detalles destacado */
+.post-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.post-footer a.btn-ver-detalles {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: #2878f0;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(40, 120, 240, 0.25);
+  transition: background-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+}
+
+.post-footer a.btn-ver-detalles svg {
+  transition: transform 0.18s ease;
+}
+
+.post-footer a.btn-ver-detalles:hover {
+  background: #1b60d0;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(27, 96, 208, 0.32);
+}
+
+.post-footer a.btn-ver-detalles:hover svg {
+  transform: translateX(3px);
+}
+
+/* Barra de paginación */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.pagination-info {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #dce3ec;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #2878f0;
+  color: #2878f0;
+  background: #f0f6ff;
+}
+
+.page-btn.active {
+  background: #2878f0;
+  border-color: #2878f0;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(40, 120, 240, 0.28);
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.page-nav-btn {
+  padding: 0 14px;
+}
+
+@media (max-width: 1100px) {
+  .post-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .post-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pagination-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

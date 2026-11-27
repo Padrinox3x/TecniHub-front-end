@@ -548,3 +548,81 @@
     justify-content: center;
   }
 }
+
+/* Modal Agendar en Itinerario */
+.modal-card-agenda {
+  max-width: 520px;
+}
+
+.modal-subtitle {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-card-agenda .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.modal-card-agenda .form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.modal-card-agenda .form-group input,
+.modal-card-agenda .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.modal-card-agenda .form-group input[readonly] {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.input-invalid {
+  border-color: #dc2626 !important;
+  background: #fef2f2 !important;
+}
+
+.modal-warning {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #b45309;
+  font-size: 13px;
+}
+
+.save-btn {
+  background: #16a34a;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: #15803d;
+}
+
+@media (max-width: 520px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

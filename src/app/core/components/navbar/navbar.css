@@ -207,6 +207,24 @@
   border: 1.5px solid #ffffff;
 }
 
+.notif-count-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #ffffff;
+  box-sizing: border-box;
+}
+
 .relative {
   position: relative;
 }
@@ -574,4 +592,19 @@
   .navbar-inner {
     padding: 0 16px;
   }
+
+  .breadcrumb-inner {
+    padding: 6px 16px;
+  }
+}
+
+.breadcrumb-strip {
+  background: #f8fafc;
+  border-top: 1px solid #eef2f6;
+}
+
+.breadcrumb-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 6px 24px;
 }
