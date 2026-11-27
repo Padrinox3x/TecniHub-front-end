@@ -15,7 +15,7 @@ export class TablonService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'https://localhost:7013/api/Tablon';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/Tablon';
 
   obtenerPublicaciones(
     filtro?: TablonFiltro

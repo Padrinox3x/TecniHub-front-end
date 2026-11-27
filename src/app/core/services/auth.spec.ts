@@ -46,7 +46,7 @@ describe('AuthService (Unit Tests)', () => {
       expect(res.usuarioId).toBe(1);
     });
 
-    const req = httpMock.expectOne('https://localhost:7013/api/Auth/login');
+    const req = httpMock.expectOne('https://d2c9vof7dxdez3.cloudfront.net/api/Auth/login');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(creds);
     req.flush(mockResponse);
@@ -75,7 +75,7 @@ describe('AuthService (Unit Tests)', () => {
       expect(res.email).toBe('juan@test.com');
     });
 
-    const req = httpMock.expectOne('https://localhost:7013/api/Auth/registro');
+    const req = httpMock.expectOne('https://d2c9vof7dxdez3.cloudfront.net/api/Auth/registro');
     expect(req.request.method).toBe('POST');
     req.flush(mockResponse);
   });

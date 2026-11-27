@@ -16,7 +16,7 @@ export class PublicacionService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'https://localhost:7013/api/tablon';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/tablon';
 
   crearServicio(
     request: CrearPublicacionServicioRequest

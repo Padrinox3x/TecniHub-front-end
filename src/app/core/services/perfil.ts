@@ -11,7 +11,7 @@ import { PerfilResponse } from '../models/perfil.models';
 export class PerfilService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'https://localhost:7013/api/Perfil';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/Perfil';
 
   obtenerPerfil(): Observable<PerfilResponse> {
     return this.http.get<PerfilResponse>(this.apiUrl);

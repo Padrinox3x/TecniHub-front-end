@@ -8,7 +8,7 @@ import { PerfilPublicoTecnico, PerfilPublicoCliente } from '../models/resena.mod
 })
 export class PerfilPublicoService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:7013/api';
+  private readonly baseUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api';
 
   obtenerPerfilTecnicoPublico(tecnicoId: number): Observable<PerfilPublicoTecnico> {
     return this.http.get<PerfilPublicoTecnico>(`${this.baseUrl}/tecnico/publico/${tecnicoId}`);
