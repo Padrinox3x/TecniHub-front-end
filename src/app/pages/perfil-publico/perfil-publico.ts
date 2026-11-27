@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 
 import { PerfilPublicoService } from '../../core/services/perfil-publico';
 import { PerfilPublicoTecnico, PerfilPublicoCliente } from '../../core/models/resena.models';
+import { BreadcrumbService } from '../../core/services/breadcrumb';
 import { Navbar } from '../../core/components/navbar/navbar';
 
 @Component({
@@ -16,6 +17,7 @@ import { Navbar } from '../../core/components/navbar/navbar';
 })
 export class PerfilPublico implements OnInit {
   private readonly perfilPublicoService = inject(PerfilPublicoService);
+  private readonly breadcrumbService = inject(BreadcrumbService, { optional: true });
   private readonly route = inject(ActivatedRoute);
   private readonly cdr = inject(ChangeDetectorRef);
 
@@ -60,6 +62,9 @@ export class PerfilPublico implements OnInit {
         .subscribe({
           next: (res) => {
             this.perfilTecnico = res;
+            if (res.nombreCompleto) {
+              this.breadcrumbService?.setUltimoLabel(`Técnico ${res.nombreCompleto}`);
+            }
             this.cdr.markForCheck();
           },
           error: (err) => {
@@ -81,6 +86,9 @@ export class PerfilPublico implements OnInit {
         .subscribe({
           next: (res) => {
             this.perfilCliente = res;
+            if (res.nombrePublico) {
+              this.breadcrumbService?.setUltimoLabel(`Cliente ${res.nombrePublico}`);
+            }
             this.cdr.markForCheck();
           },
           error: (err) => {
