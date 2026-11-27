@@ -13,8 +13,8 @@ import {
 })
 export class ResenaService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrlResenas = 'https://localhost:7013/api/resenas';
-  private readonly apiUrlServicios = 'https://localhost:7013/api/servicios';
+  private readonly apiUrlResenas = 'https://d2c9vof7dxdez3.cloudfront.net/api/resenas';
+  private readonly apiUrlServicios = 'https://d2c9vof7dxdez3.cloudfront.net/api/servicios';
 
   crearResena(datos: CrearResenaUniversalRequest): Observable<ResenaTecnico> {
     return this.http.post<ResenaTecnico>(this.apiUrlResenas, datos);

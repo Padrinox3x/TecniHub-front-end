@@ -12,7 +12,7 @@ import {
 })
 export class ItinerarioService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'https://localhost:7013/api/itinerarios';
+  private readonly apiUrl = 'https://d2c9vof7dxdez3.cloudfront.net/api/itinerarios';
 
   obtenerItinerario(
     incluirCompletados = false,
